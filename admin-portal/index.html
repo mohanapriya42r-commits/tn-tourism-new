@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Tamil Nadu Tourism</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" href="../images/logo.jpg">
+</head>
+<body class="admin-login-body">
+
+  <div class="login-card">
+    <img src="../images/logo.jpg" alt="TN Tourism Logo" class="login-logo" onerror="this.src='https://via.placeholder.com/72?text=TN'">
+    <h1 class="login-title">Admin Portal</h1>
+    <p class="login-subtitle">Tamil Nadu Tourism State Operations Center</p>
+
+    <div id="login-error" style="display: none; padding: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; font-weight: 600;"></div>
+
+    <form id="admin-login-form">
+      <div class="form-group" style="text-align: left;">
+        <label class="form-label" for="admin-email">Admin Email</label>
+        <input 
+          type="email" 
+          id="admin-email" 
+          class="form-input" 
+          placeholder="admin@tourism.com" 
+          value="admin@tourism.com" 
+          required 
+        />
+      </div>
+
+      <div class="form-group" style="text-align: left;">
+        <label class="form-label" for="admin-password">Password</label>
+        <input 
+          type="password" 
+          id="admin-password" 
+          class="form-input" 
+          placeholder="••••••••" 
+          value="admin123" 
+          required 
+        />
+      </div>
+
+      <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem; margin-top: 0.5rem;">
+        🔐 Login to Portal →
+      </button>
+    </form>
+
+    <div style="margin-top: 1.8rem; padding-top: 1.2rem; border-top: 1px solid var(--border-light); font-size: 0.8rem; color: var(--text-muted);">
+      <strong>Default Admin Access:</strong> <em>admin@tourism.com</em> / <em>admin123</em>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth(); // Will redirect to dashboard if already logged in
+
+      const form = document.getElementById('admin-login-form');
+      const errorDiv = document.getElementById('login-error');
+      const loginBtn = document.getElementById('login-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorDiv.style.display = 'none';
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = 'Authorizing...';
+
+        const email = document.getElementById('admin-email').value.trim();
+        const password = document.getElementById('admin-password').value;
+
+        try {
+          const res = await fetch(`${API_BASE}/api/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await res.json();
+          if (res.ok && data.success) {
+            sessionStorage.setItem('adminToken', data.token);
+            sessionStorage.setItem('adminUser', JSON.stringify(data.admin));
+            window.location.href = 'dashboard.html';
+          } else {
+            errorDiv.textContent = '⚠️ ' + (data.message || 'Invalid credentials or unauthorized access.');
+            errorDiv.style.display = 'block';
+          }
+        } catch (err) {
+          errorDiv.textContent = '⚠️ Cannot connect to backend server. Please check that the server is running.';
+          errorDiv.style.display = 'block';
+        } finally {
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = '🔐 Login to Portal →';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

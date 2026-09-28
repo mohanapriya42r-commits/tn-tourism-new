@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Tamil Nadu Tourism</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" href="../images/logo.jpg">
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="../images/logo.jpg" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/40?text=TN'">
+        <div>
+          <div class="sidebar-brand">TN Tourism</div>
+          <div class="sidebar-tag">Admin Control</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-item active"><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+        <li class="menu-item"><a href="users.html"><span>👥</span> Users</a></li>
+        <li class="menu-item"><a href="trips.html"><span>🗺️</span> Trip Planner</a></li>
+        <li class="menu-item"><a href="hotels.html"><span>🏨</span> Hotels</a></li>
+        <li class="menu-item"><a href="travels.html"><span>🚐</span> Travels & Transport</a></li>
+        <li class="menu-item"><a href="reports.html"><span>📈</span> Reports</a></li>
+        <li class="menu-item"><a href="settings.html"><span>⚙️</span> Settings</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button onclick="adminLogout()" class="btn btn-outline" style="width: 100%; justify-content: flex-start; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+          🚪 Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="admin-main">
+      <!-- TOP NAVIGATION BAR -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h1>Admin Dashboard Overview</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="admin-profile-pill">
+            <span>🛡️ Super Admin:</span>
+            <strong id="topbar-admin-email">admin@tourism.com</strong>
+          </div>
+          <button onclick="location.reload()" class="btn btn-outline btn-sm">🔄 Refresh</button>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <div class="admin-content">
+
+        <!-- 6 SUMMARY STAT CARDS -->
+        <div class="stats-grid">
+          <div class="card stat-card">
+            <div class="stat-icon" style="background: rgba(124, 58, 237, 0.12); color: #7c3aed;">👥</div>
+            <div>
+              <div class="stat-label">Total Registered Users</div>
+              <div class="stat-number" id="stat-users">--</div>
+            </div>
+          </div>
+
+          <div class="card stat-card">
+            <div class="stat-icon" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">🗺️</div>
+            <div>
+              <div class="stat-label">Total Saved Trips</div>
+              <div class="stat-number" id="stat-trips">--</div>
+            </div>
+          </div>
+
+          <div class="card stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">🏨</div>
+            <div>
+              <div class="stat-label">Total Hotels</div>
+              <div class="stat-number" id="stat-hotels">--</div>
+            </div>
+          </div>
+
+          <div class="card stat-card" style="border-left: 4px solid var(--warning);">
+            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b;">⏳</div>
+            <div>
+              <div class="stat-label">Pending Hotel Submissions</div>
+              <div class="stat-number" id="stat-pending-hotels" style="color: var(--warning);">--</div>
+            </div>
+          </div>
+
+          <div class="card stat-card">
+            <div class="stat-icon" style="background: rgba(168, 85, 247, 0.12); color: #a855f7;">🚐</div>
+            <div>
+              <div class="stat-label">Total Travel Services</div>
+              <div class="stat-number" id="stat-travels">--</div>
+            </div>
+          </div>
+
+          <div class="card stat-card" style="border-left: 4px solid var(--warning);">
+            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b;">⏳</div>
+            <div>
+              <div class="stat-label">Pending Travel Submissions</div>
+              <div class="stat-number" id="stat-pending-travels" style="color: var(--warning);">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS & STATS OVERVIEW SECTION -->
+        <div style="display: grid; gridTemplateColumns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          
+          <!-- Pending Items Alert Box -->
+          <div class="card">
+            <h3 style="font-size: 1.15rem; color: var(--text-heading); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              ⚡ Action Required: Pending Submissions
+            </h3>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                <div>
+                  <h4 style="font-size: 1rem; color: var(--text-heading); margin: 0;">🏨 Pending Hotels</h4>
+                  <span style="font-size: 0.82rem; color: var(--text-muted);" id="pending-hotels-text">0 submissions waiting for review</span>
+                </div>
+                <a href="hotels.html" class="btn btn-primary btn-sm">Review Hotels →</a>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                <div>
+                  <h4 style="font-size: 1rem; color: var(--text-heading); margin: 0;">🚐 Pending Travel Services</h4>
+                  <span style="font-size: 0.82rem; color: var(--text-muted);" id="pending-travels-text">0 submissions waiting for review</span>
+                </div>
+                <a href="travels.html" class="btn btn-primary btn-sm">Review Travels →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modules Distribution Breakdown -->
+          <div class="card">
+            <h3 style="font-size: 1.15rem; color: var(--text-heading); margin-bottom: 1rem;">
+              📈 Platform Activity Breakdown
+            </h3>
+
+            <div style="display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.9rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                  <span>Approved Hotels</span>
+                  <strong id="bar-approved-hotels-val">0</strong>
+                </div>
+                <div style="height: 8px; background: var(--border-subtle); border-radius: 9999px; overflow: hidden;">
+                  <div id="bar-approved-hotels" style="width: 0%; height: 100%; background: var(--success); transition: width 0.6s ease;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                  <span>Approved Travel Services</span>
+                  <strong id="bar-approved-travels-val">0</strong>
+                </div>
+                <div style="height: 8px; background: var(--border-subtle); border-radius: 9999px; overflow: hidden;">
+                  <div id="bar-approved-travels" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.6s ease;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                  <span>Saved User Trip Plans</span>
+                  <strong id="bar-trips-val">0</strong>
+                </div>
+                <div style="height: 8px; background: var(--border-subtle); border-radius: 9999px; overflow: hidden;">
+                  <div id="bar-trips" style="width: 0%; height: 100%; background: var(--info); transition: width 0.6s ease;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      checkAdminAuth();
+      fetchDashboardStats();
+    });
+
+    async function fetchDashboardStats() {
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/dashboard-stats`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.stats) {
+            const s = data.stats;
+            document.getElementById('stat-users').textContent = s.totalUsers;
+            document.getElementById('stat-trips').textContent = s.totalTrips;
+            document.getElementById('stat-hotels').textContent = s.totalHotels;
+            document.getElementById('stat-pending-hotels').textContent = s.pendingHotels;
+            document.getElementById('stat-travels').textContent = s.totalTravels;
+            document.getElementById('stat-pending-travels').textContent = s.pendingTravels;
+
+            document.getElementById('pending-hotels-text').textContent = `${s.pendingHotels} submissions waiting for review`;
+            document.getElementById('pending-travels-text').textContent = `${s.pendingTravels} submissions waiting for review`;
+
+            // Progress bar visualizers
+            document.getElementById('bar-approved-hotels-val').textContent = s.approvedHotels;
+            document.getElementById('bar-approved-hotels').style.width = Math.min(100, (s.approvedHotels / (s.totalHotels || 1)) * 100) + '%';
+
+            document.getElementById('bar-approved-travels-val').textContent = s.approvedTravels;
+            document.getElementById('bar-approved-travels').style.width = Math.min(100, (s.approvedTravels / (s.totalTravels || 1)) * 100) + '%';
+
+            document.getElementById('bar-trips-val').textContent = s.totalTrips;
+            document.getElementById('bar-trips').style.width = Math.min(100, (s.totalTrips / 10) * 100) + '%';
+          }
+        }
+      } catch (err) {
+        console.log('Error fetching dashboard stats:', err);
+      }
+    }
+  </script>
+</body>
+</html>

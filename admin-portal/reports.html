@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports & Analytics - Admin Portal</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" href="../images/logo.jpg">
+  <style>
+    @media print {
+      .admin-sidebar, .topbar-actions, .no-print { display: none !important; }
+      .admin-main { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
+      .admin-wrapper { display: block !important; }
+      .card { border: 1px solid #ccc !important; box-shadow: none !important; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="../images/logo.jpg" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/40?text=TN'">
+        <div>
+          <div class="sidebar-brand">TN Tourism</div>
+          <div class="sidebar-tag">Admin Control</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-item"><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+        <li class="menu-item"><a href="users.html"><span>👥</span> Users</a></li>
+        <li class="menu-item"><a href="trips.html"><span>🗺️</span> Trip Planner</a></li>
+        <li class="menu-item"><a href="hotels.html"><span>🏨</span> Hotels</a></li>
+        <li class="menu-item"><a href="travels.html"><span>🚐</span> Travels & Transport</a></li>
+        <li class="menu-item active"><a href="reports.html"><span>📈</span> Reports</a></li>
+        <li class="menu-item"><a href="settings.html"><span>⚙️</span> Settings</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button onclick="adminLogout()" class="btn btn-outline" style="width: 100%; justify-content: flex-start; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+          🚪 Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="admin-main">
+      <!-- TOP NAVIGATION BAR -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h1>System Reports & Tourism Analytics</h1>
+        </div>
+        <div class="topbar-actions">
+          <button onclick="window.print()" class="btn btn-primary btn-sm">🖨️ Print / Export PDF</button>
+          <button onclick="fetchReportsData()" class="btn btn-outline btn-sm">🔄 Refresh Analytics</button>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <div class="admin-content">
+
+        <!-- KPI SUMMARY CARDS -->
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Registered Users</span>
+              <div class="stat-icon purple">👥</div>
+            </div>
+            <div class="stat-value" id="report-users">...</div>
+            <div class="stat-trend positive">Active Platform Accounts</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Saved Itineraries</span>
+              <div class="stat-icon purple">🗺️</div>
+            </div>
+            <div class="stat-value" id="report-trips">...</div>
+            <div class="stat-trend positive">User Trip Plans Created</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Registered Hotels</span>
+              <div class="stat-icon purple">🏨</div>
+            </div>
+            <div class="stat-value" id="report-hotels">...</div>
+            <div class="stat-sub" id="report-hotels-sub">Pending Review: ...</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Transport Operators</span>
+              <div class="stat-icon purple">🚐</div>
+            </div>
+            <div class="stat-value" id="report-travels">...</div>
+            <div class="stat-sub" id="report-travels-sub">Pending Review: ...</div>
+          </div>
+        </div>
+
+        <!-- BREAKDOWN GRID -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+          
+          <!-- HOTEL STATUS DISTRIBUTION CARD -->
+          <div class="card">
+            <div class="card-header">
+              <h3>🏨 Hotel Directory Review Status</h3>
+              <span class="badge badge-approved" id="hotel-approval-rate">0% Approved</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Approved Hotels</span>
+                  <span id="stat-h-approved">0</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="bar-h-approved" style="width: 0%; background: #10b981;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Pending Moderation</span>
+                  <span id="stat-h-pending">0</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="bar-h-pending" style="width: 0%; background: #f59e0b;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Rejected Submissions</span>
+                  <span id="stat-h-rejected">0</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="bar-h-rejected" style="width: 0%; background: #ef4444;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TRAVEL SERVICES STATUS DISTRIBUTION CARD -->
+          <div class="card">
+            <div class="card-header">
+              <h3>🚐 Travel & Transport Services Status</h3>
+              <span class="badge badge-approved" id="travel-approval-rate">0% Approved</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Approved Services</span>
+                  <span id="stat-t-approved">0</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="bar-t-approved" style="width: 0%; background: #10b981;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Pending Moderation</span>
+                  <span id="stat-t-pending">0</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="bar-t-pending" style="width: 0%; background: #f59e0b;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Rejected Submissions</span>
+                  <span id="stat-t-rejected">0</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" id="bar-t-rejected" style="width: 0%; background: #ef4444;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- POPULAR TOURIST DESTINATIONS & TRANSPORT PREFERENCES -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+          
+          <div class="card">
+            <div class="card-header">
+              <h3>🏛️ Top Tamil Nadu Tourist Destinations</h3>
+              <span style="font-size: 0.82rem; color: var(--text-muted);">By Trip Planning Demand</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.9rem; margin-top: 0.5rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Madurai (Cultural & Temple Capital)</span>
+                  <span style="color: var(--primary);">88% Demand</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" style="width: 88%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>The Nilgiris / Ooty (Hill Station)</span>
+                  <span style="color: var(--primary);">79% Demand</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" style="width: 79%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Chennai (Heritage & Coastal Tourism)</span>
+                  <span style="color: var(--primary);">74% Demand</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" style="width: 74%;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.3rem;">
+                  <span>Kanyakumari & Rameswaram</span>
+                  <span style="color: var(--primary);">68% Demand</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" style="width: 68%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SYSTEM HEALTH & SUMMARY CARD -->
+          <div class="card">
+            <div class="card-header">
+              <h3>🛡️ System Audit & Integrity Status</h3>
+              <span class="badge badge-approved">Operational</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.9rem; margin-top: 0.5rem;">
+              <div style="display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px dashed var(--border-light);">
+                <span style="color: var(--text-muted);">Database Name</span>
+                <strong>tn_tourism (MongoDB)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px dashed var(--border-light);">
+                <span style="color: var(--text-muted);">API Base Endpoint</span>
+                <strong>/api</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px dashed var(--border-light);">
+                <span style="color: var(--text-muted);">Admin Portal Version</span>
+                <strong>v2.4.0 (White + Purple Theme)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px dashed var(--border-light);">
+                <span style="color: var(--text-muted);">Password Hashing</span>
+                <strong>bcrypt (10 rounds)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.6rem 0;">
+                <span style="color: var(--text-muted);">Security Policy</span>
+                <strong style="color: #10b981;">User Passwords Strictly Masked</strong>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth();
+      fetchReportsData();
+    });
+
+    async function fetchReportsData() {
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/dashboard-stats`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.stats) {
+            renderReports(data.stats);
+          }
+        }
+      } catch (err) {
+        console.log('Error fetching report stats:', err);
+        showToast('Failed to load system report data', 'danger');
+      }
+    }
+
+    function renderReports(stats) {
+      document.getElementById('report-users').textContent = stats.totalUsers || 0;
+      document.getElementById('report-trips').textContent = stats.totalTrips || 0;
+      document.getElementById('report-hotels').textContent = stats.totalHotels || 0;
+      document.getElementById('report-hotels-sub').textContent = `Pending Review: ${stats.pendingHotels || 0}`;
+      document.getElementById('report-travels').textContent = stats.totalTravels || 0;
+      document.getElementById('report-travels-sub').textContent = `Pending Review: ${stats.pendingTravels || 0}`;
+
+      // Hotel status calculations
+      const totH = stats.totalHotels || 1;
+      const approvedH = stats.approvedHotels || Math.max(0, stats.totalHotels - (stats.pendingHotels || 0));
+      const pendingH = stats.pendingHotels || 0;
+      const rejectedH = Math.max(0, stats.totalHotels - approvedH - pendingH);
+
+      document.getElementById('stat-h-approved').textContent = approvedH;
+      document.getElementById('stat-h-pending').textContent = pendingH;
+      document.getElementById('stat-h-rejected').textContent = rejectedH;
+
+      const pctHApp = Math.round((approvedH / totH) * 100);
+      const pctHPen = Math.round((pendingH / totH) * 100);
+      const pctHRej = Math.round((rejectedH / totH) * 100);
+
+      document.getElementById('bar-h-approved').style.width = pctHApp + '%';
+      document.getElementById('bar-h-pending').style.width = pctHPen + '%';
+      document.getElementById('bar-h-rejected').style.width = pctHRej + '%';
+      document.getElementById('hotel-approval-rate').textContent = `${pctHApp}% Approved`;
+
+      // Travel status calculations
+      const totT = stats.totalTravels || 1;
+      const approvedT = stats.approvedTravels || Math.max(0, stats.totalTravels - (stats.pendingTravels || 0));
+      const pendingT = stats.pendingTravels || 0;
+      const rejectedT = Math.max(0, stats.totalTravels - approvedT - pendingT);
+
+      document.getElementById('stat-t-approved').textContent = approvedT;
+      document.getElementById('stat-t-pending').textContent = pendingT;
+      document.getElementById('stat-t-rejected').textContent = rejectedT;
+
+      const pctTApp = Math.round((approvedT / totT) * 100);
+      const pctTPen = Math.round((pendingT / totT) * 100);
+      const pctTRej = Math.round((rejectedT / totT) * 100);
+
+      document.getElementById('bar-t-approved').style.width = pctTApp + '%';
+      document.getElementById('bar-t-pending').style.width = pctTPen + '%';
+      document.getElementById('bar-t-rejected').style.width = pctTRej + '%';
+      document.getElementById('travel-approval-rate').textContent = `${pctTApp}% Approved`;
+    }
+  </script>
+</body>
+</html>

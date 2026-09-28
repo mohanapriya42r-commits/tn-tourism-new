@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Management - Admin Portal</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" href="../images/logo.jpg">
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="../images/logo.jpg" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/40?text=TN'">
+        <div>
+          <div class="sidebar-brand">TN Tourism</div>
+          <div class="sidebar-tag">Admin Control</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-item"><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+        <li class="menu-item"><a href="users.html"><span>👥</span> Users</a></li>
+        <li class="menu-item"><a href="trips.html"><span>🗺️</span> Trip Planner</a></li>
+        <li class="menu-item active"><a href="hotels.html"><span>🏨</span> Hotels</a></li>
+        <li class="menu-item"><a href="travels.html"><span>🚐</span> Travels & Transport</a></li>
+        <li class="menu-item"><a href="reports.html"><span>📈</span> Reports</a></li>
+        <li class="menu-item"><a href="settings.html"><span>⚙️</span> Settings</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button onclick="adminLogout()" class="btn btn-outline" style="width: 100%; justify-content: flex-start; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+          🚪 Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="admin-main">
+      <!-- TOP NAVIGATION BAR -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h1>Hotel Submissions & Directory Management</h1>
+        </div>
+        <div class="topbar-actions">
+          <button onclick="openAddHotelModal()" class="btn btn-primary btn-sm">➕ Add Hotel</button>
+          <button onclick="fetchHotels()" class="btn btn-outline btn-sm">🔄 Refresh List</button>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <div class="admin-content">
+
+        <!-- STATUS TABS BAR -->
+        <div class="filter-bar">
+          <div class="tab-group">
+            <button class="tab-btn active" id="tab-all" onclick="setTab('all')">All Hotels</button>
+            <button class="tab-btn" id="tab-pending" onclick="setTab('Pending Approval')">⏳ Pending</button>
+            <button class="tab-btn" id="tab-approved" onclick="setTab('Approved')">✅ Approved</button>
+            <button class="tab-btn" id="tab-rejected" onclick="setTab('Rejected')">❌ Rejected</button>
+          </div>
+
+          <div style="display: flex; gap: 0.8rem; align-items: center; flex: 1; max-width: 450px;">
+            <input 
+              type="text" 
+              id="hotel-search" 
+              class="form-input" 
+              placeholder="🔍 Search hotel name, owner, city..." 
+              oninput="filterHotels()"
+            />
+            <select id="hotel-district-filter" class="form-select" onchange="filterHotels()" style="width: 180px;">
+              <option value="">All Districts</option>
+              <option value="Madurai">Madurai</option>
+              <option value="Chennai">Chennai</option>
+              <option value="The Nilgiris">The Nilgiris</option>
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Thanjavur">Thanjavur</option>
+              <option value="Kanyakumari">Kanyakumari</option>
+              <option value="Dindigul">Dindigul</option>
+              <option value="Salem">Salem</option>
+              <option value="Tiruchirappalli">Tiruchirappalli</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- HOTELS TABLE CARD -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Hotel Details</th>
+                  <th>Owner & Contact</th>
+                  <th>District / Location</th>
+                  <th>Pricing</th>
+                  <th>Status</th>
+                  <th>Submitted Date</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="hotels-table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Loading hotel listings from database...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- HOTEL VIEW & EDIT MODAL -->
+  <div class="modal-overlay" id="hotel-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="hotel-modal-title" style="font-size: 1.2rem; color: var(--text-heading); margin: 0;">🏨 Hotel Information</h3>
+        <button class="modal-close" onclick="closeHotelModal()">✕</button>
+      </div>
+      
+      <div id="hotel-modal-body">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    let allHotels = [];
+    let currentStatusTab = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth();
+      fetchHotels();
+    });
+
+    async function fetchHotels() {
+      try {
+        const res = await fetch(`${API_BASE}/api/hotels/all`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.hotels) {
+            allHotels = data.hotels;
+            filterHotels();
+          }
+        }
+      } catch (err) {
+        console.log('Error fetching hotels:', err);
+        showToast('Failed to connect to backend hotels API', 'danger');
+      }
+    }
+
+    function setTab(status) {
+      currentStatusTab = status;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      if (status === 'all') document.getElementById('tab-all').classList.add('active');
+      else if (status === 'Pending Approval') document.getElementById('tab-pending').classList.add('active');
+      else if (status === 'Approved') document.getElementById('tab-approved').classList.add('active');
+      else if (status === 'Rejected') document.getElementById('tab-rejected').classList.add('active');
+
+      filterHotels();
+    }
+
+    function filterHotels() {
+      const q = document.getElementById('hotel-search').value.toLowerCase().trim();
+      const district = document.getElementById('hotel-district-filter').value;
+
+      const filtered = allHotels.filter(h => {
+        const matchesTab = currentStatusTab === 'all' || (h.status === currentStatusTab);
+        const matchesDistrict = !district || (h.cityDistrict && h.cityDistrict.toLowerCase().includes(district.toLowerCase()));
+        const matchesQuery = !q || (
+          h.hotelName.toLowerCase().includes(q) ||
+          h.ownerName.toLowerCase().includes(q) ||
+          h.address.toLowerCase().includes(q) ||
+          h.email.toLowerCase().includes(q)
+        );
+        return matchesTab && matchesDistrict && matchesQuery;
+      });
+
+      renderHotels(filtered);
+    }
+
+    function renderHotels(hotelsList) {
+      const tbody = document.getElementById('hotels-table-body');
+
+      if (hotelsList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              🏨 No hotel submissions found matching selected filters.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = hotelsList.map(h => {
+        const subDate = new Date(h.createdAt).toLocaleDateString('en-IN', {
+          year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+        const statusClass = h.status === 'Approved' ? 'badge-approved' : h.status === 'Rejected' ? 'badge-rejected' : 'badge-pending';
+
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(h.hotelName)}</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">${escapeHtml(h.category || 'Hotel')}</div>
+            </td>
+            <td>
+              <div>👤 ${escapeHtml(h.ownerName)}</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">📞 ${escapeHtml(h.mobile)}</div>
+            </td>
+            <td>📍 <strong>${escapeHtml(h.cityDistrict)}</strong></td>
+            <td><strong style="color: #10b981;">${escapeHtml(h.priceRange || '₹1,500/night')}</strong></td>
+            <td>
+              <span class="badge ${statusClass}">
+                ${h.status === 'Approved' ? '✅ Approved' : h.status === 'Rejected' ? '❌ Rejected' : '⏳ Pending'}
+              </span>
+            </td>
+            <td>${subDate}</td>
+            <td style="text-align: right;">
+              <div style="display: flex; gap: 0.4rem; justify-content: flex-end; flex-wrap: wrap;">
+                <button onclick="viewHotel('${h._id}')" class="btn btn-outline btn-sm">👁️ View</button>
+                ${h.status !== 'Approved' ? `<button onclick="updateHotelStatus('${h._id}', 'Approved')" class="btn btn-success btn-sm">✅ Approve</button>` : ''}
+                ${h.status !== 'Rejected' ? `<button onclick="updateHotelStatus('${h._id}', 'Rejected')" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger);">❌ Reject</button>` : ''}
+                <button onclick="deleteHotel('${h._id}', '${escapeHtml(h.hotelName)}')" class="btn btn-danger btn-sm">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function viewHotel(id) {
+      const h = allHotels.find(item => item._id === id);
+      if (!h) return;
+
+      const subDate = new Date(h.createdAt).toLocaleDateString('en-IN', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      const modalBody = document.getElementById('hotel-modal-body');
+      document.getElementById('hotel-modal-title').textContent = '🏨 ' + h.hotelName;
+
+      modalBody.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.95rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+            <div>
+              <span class="badge ${h.status === 'Approved' ? 'badge-approved' : h.status === 'Rejected' ? 'badge-rejected' : 'badge-pending'}">
+                Status: ${h.status}
+              </span>
+              <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.3rem;">Submitted On: ${subDate}</div>
+            </div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #10b981;">
+              ${escapeHtml(h.priceRange)}
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+            <div>👤 <strong>Owner Name:</strong> ${escapeHtml(h.ownerName)}</div>
+            <div>📞 <strong>Mobile Number:</strong> <a href="tel:${h.mobile}" style="color: var(--primary);">${escapeHtml(h.mobile)}</a></div>
+            <div>✉️ <strong>Email Address:</strong> <a href="mailto:${h.email}" style="color: var(--primary);">${escapeHtml(h.email)}</a></div>
+            <div>📍 <strong>District / City:</strong> ${escapeHtml(h.cityDistrict)}</div>
+            <div style="grid-column: span 2;">📍 <strong>Full Address:</strong> ${escapeHtml(h.address)}</div>
+          </div>
+
+          <div>
+            <strong style="color: var(--text-heading); display: block; margin-bottom: 0.3rem;">📝 Hotel Description:</strong>
+            <p style="color: var(--text-main); font-size: 0.92rem; line-height: 1.5; white-space: pre-line;">${escapeHtml(h.description)}</p>
+          </div>
+
+          ${h.amenities && h.amenities.length > 0 ? `
+            <div>
+              <strong style="color: var(--text-heading); display: block; margin-bottom: 0.4rem;">✨ Amenities & Facilities:</strong>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                ${h.amenities.map(a => `<span style="padding: 0.2rem 0.6rem; background: var(--primary-light); color: var(--primary); border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">✓ ${escapeHtml(a)}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--border-light); margin-top: 0.5rem;">
+            ${h.status !== 'Approved' ? `<button onclick="updateHotelStatus('${h._id}', 'Approved'); closeHotelModal();" class="btn btn-success" style="flex: 1;">✅ Approve Hotel</button>` : ''}
+            ${h.status !== 'Rejected' ? `<button onclick="updateHotelStatus('${h._id}', 'Rejected'); closeHotelModal();" class="btn btn-danger" style="flex: 1;">❌ Reject Hotel</button>` : ''}
+            ${h.googleMapsUrl ? `<a href="${h.googleMapsUrl}" target="_blank" class="btn btn-outline" style="text-decoration: none;">🗺️ Google Maps ↗</a>` : ''}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('hotel-modal').classList.add('active');
+    }
+
+    function openAddHotelModal() {
+      const modalBody = document.getElementById('hotel-modal-body');
+      document.getElementById('hotel-modal-title').textContent = '➕ Add New Hotel Listing';
+
+      modalBody.innerHTML = `
+        <form id="add-hotel-form" onsubmit="handleAddHotel(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label">Hotel Name *</label>
+              <input type="text" id="new-hotel-name" class="form-input" placeholder="e.g. Royal Heritage Resort" required />
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label">Owner Name *</label>
+              <input type="text" id="new-owner-name" class="form-input" placeholder="e.g. R. Sundaram" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label">Mobile Number *</label>
+              <input type="tel" id="new-mobile" class="form-input" placeholder="+91 98765 43210" required />
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label">Email Address *</label>
+              <input type="email" id="new-email" class="form-input" placeholder="contact@hotel.com" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label">District / City *</label>
+              <select id="new-district" class="form-select" required>
+                <option value="Madurai">Madurai</option>
+                <option value="Chennai">Chennai</option>
+                <option value="The Nilgiris">The Nilgiris</option>
+                <option value="Coimbatore">Coimbatore</option>
+                <option value="Thanjavur">Thanjavur</option>
+                <option value="Kanyakumari">Kanyakumari</option>
+                <option value="Dindigul">Dindigul</option>
+                <option value="Salem">Salem</option>
+                <option value="Tiruchirappalli">Tiruchirappalli</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label">Price Range *</label>
+              <input type="text" id="new-price" class="form-input" placeholder="e.g. ₹2,500 - ₹4,000 / night" required />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">Full Address *</label>
+            <input type="text" id="new-address" class="form-input" placeholder="e.g. 12 West Tower St, Madurai" required />
+          </div>
+
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label">Description *</label>
+            <textarea id="new-desc" class="form-input" rows="3" placeholder="Hotel features, room view, location benefits..." required></textarea>
+          </div>
+
+          <div style="display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 0.5rem;">
+            <button type="button" onclick="closeHotelModal()" class="btn btn-outline">Cancel</button>
+            <button type="submit" class="btn btn-primary">Publish Hotel →</button>
+          </div>
+        </form>
+      `;
+
+      document.getElementById('hotel-modal').classList.add('active');
+    }
+
+    async function handleAddHotel(e) {
+      e.preventDefault();
+      const payload = {
+        hotelName: document.getElementById('new-hotel-name').value.trim(),
+        ownerName: document.getElementById('new-owner-name').value.trim(),
+        mobile: document.getElementById('new-mobile').value.trim(),
+        email: document.getElementById('new-email').value.trim(),
+        cityDistrict: document.getElementById('new-district').value,
+        priceRange: document.getElementById('new-price').value.trim(),
+        address: document.getElementById('new-address').value.trim(),
+        description: document.getElementById('new-desc').value.trim(),
+        status: 'Approved'
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/hotels`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('New hotel created and published successfully!');
+          closeHotelModal();
+          fetchHotels();
+        } else {
+          showToast(data.message || 'Creation failed', 'danger');
+        }
+      } catch (err) {
+        showToast('Backend connection error: ' + err.message, 'danger');
+      }
+    }
+
+    function closeHotelModal() {
+      document.getElementById('hotel-modal').classList.remove('active');
+    }
+
+    async function updateHotelStatus(id, newStatus) {
+      try {
+        const res = await fetch(`${API_BASE}/api/hotels/${id}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Hotel status updated to ${newStatus}!`);
+          fetchHotels();
+        } else {
+          showToast(data.message || 'Update failed', 'danger');
+        }
+      } catch (err) {
+        showToast('Backend connection error: ' + err.message, 'danger');
+      }
+    }
+
+    async function deleteHotel(id, name) {
+      if (!confirm(`Are you sure you want to delete hotel listing "${name}"?`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/hotels/${id}`, {
+          method: 'DELETE'
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Hotel "${name}" deleted successfully!`);
+          fetchHotels();
+        } else {
+          showToast(data.message || 'Delete failed', 'danger');
+        }
+      } catch (err) {
+        showToast('Backend connection error: ' + err.message, 'danger');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

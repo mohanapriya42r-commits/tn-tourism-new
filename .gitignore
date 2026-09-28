@@ -1,0 +1,60 @@
+# --- Dependencies & build output ---
+node_modules/
+dist/
+build/
+
+# --- Stale build archives / zips ---
+dist.zip
+*.zip
+
+# --- Leftover vanilla (old) static HTML/CSS/JS from the pre-React version ---
+# The React app in src/ replaces these. index.html is the React entry and is
+# intentionally NOT ignored. These old pages are kept on disk but not pushed.
+/categories.html
+/emergency.html
+/favorites.html
+/festival-calendar.html
+/hotels.html
+/login.html
+/place-details.html
+/places.html
+/profile.html
+/register.html
+/restaurants.html
+/trip-planner.html
+/manager-dashboard.html
+/append_css.cjs
+
+# --- Old vanilla JS/CSS (replaced by src/ and src/index.css) ---
+/css/
+/js/
+
+# --- Local environment secrets (NEVER commit) ---
+# backend/.env contains live MongoDB credentials (MONGODB_URI).
+# Only commit backend/.env.example instead.
+backend/.env
+.env
+.env.local
+.env.development
+.env.production
+
+# --- Editor / OS cruft ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# --- Vercel ---
+.vercel/
+
+# --- Local tooling ---
+.kilo/
+
+# --- Misc ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip Planner Management - Admin Portal</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" href="../images/logo.jpg">
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="../images/logo.jpg" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/40?text=TN'">
+        <div>
+          <div class="sidebar-brand">TN Tourism</div>
+          <div class="sidebar-tag">Admin Control</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-item"><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+        <li class="menu-item"><a href="users.html"><span>👥</span> Users</a></li>
+        <li class="menu-item active"><a href="trips.html"><span>🗺️</span> Trip Planner</a></li>
+        <li class="menu-item"><a href="hotels.html"><span>🏨</span> Hotels</a></li>
+        <li class="menu-item"><a href="travels.html"><span>🚐</span> Travels & Transport</a></li>
+        <li class="menu-item"><a href="reports.html"><span>📈</span> Reports</a></li>
+        <li class="menu-item"><a href="settings.html"><span>⚙️</span> Settings</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button onclick="adminLogout()" class="btn btn-outline" style="width: 100%; justify-content: flex-start; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+          🚪 Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="admin-main">
+      <!-- TOP NAVIGATION BAR -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h1>Saved Trip Plans Management</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="admin-profile-pill">
+            <span>🛡️ Super Admin:</span>
+            <strong id="topbar-admin-email">admin@tourism.com</strong>
+          </div>
+          <button onclick="fetchTrips()" class="btn btn-outline btn-sm">🔄 Refresh List</button>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <div class="admin-content">
+
+        <!-- FILTER & SEARCH BAR -->
+        <div class="filter-bar">
+          <div style="flex: 1; max-width: 380px;">
+            <input 
+              type="text" 
+              id="trip-search" 
+              class="form-input" 
+              placeholder="🔍 Search user, destination, or source..." 
+              oninput="filterTrips()"
+            />
+          </div>
+
+          <div style="display: flex; gap: 0.8rem; align-items: center;">
+            <select id="trip-transport-filter" class="form-select" onchange="filterTrips()" style="width: auto;">
+              <option value="">All Transport Modes</option>
+              <option value="Cab">Cab / Taxi</option>
+              <option value="Bus">Bus</option>
+              <option value="Train">Train</option>
+            </select>
+
+            <span style="font-size: 0.88rem; color: var(--text-muted); font-weight: 600;">
+              Total Trips: <span id="trip-count-badge" style="color: var(--primary); font-weight: 800;">0</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- TRIPS TABLE CARD -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>User Name</th>
+                  <th>Route (Source → Destination)</th>
+                  <th>Travelers & Days</th>
+                  <th>Start Date</th>
+                  <th>Transport & Type</th>
+                  <th>Estimated Cost</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="trips-table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Loading user saved trip plans...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- TRIP DETAILS MODAL -->
+  <div class="modal-overlay" id="trip-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem; color: var(--text-heading); margin: 0;">🗺️ Saved Trip Plan Details</h3>
+        <button class="modal-close" onclick="closeTripModal()">✕</button>
+      </div>
+      <div id="trip-modal-content">
+        <!-- Filled dynamically -->
+      </div>
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button onclick="closeTripModal()" class="btn btn-outline">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    let allTrips = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth();
+      fetchTrips();
+    });
+
+    async function fetchTrips() {
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/trips`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.trips) {
+            allTrips = data.trips;
+            renderTrips(allTrips);
+          }
+        }
+      } catch (err) {
+        console.log('Error fetching trips:', err);
+        showToast('Failed to connect to trips API', 'danger');
+      }
+    }
+
+    function renderTrips(tripsList) {
+      const tbody = document.getElementById('trips-table-body');
+      document.getElementById('trip-count-badge').textContent = tripsList.length;
+
+      if (tripsList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              🗺️ No saved trips found. Users can create trip plans on the public Trip Planner page.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = tripsList.map(t => {
+        const createdDate = new Date(t.createdAt).toLocaleDateString('en-IN', {
+          year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(t.userName)}</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">${escapeHtml(t.userEmail)}</div>
+            </td>
+            <td>
+              <span style="font-weight: 700; color: var(--text-heading);">${escapeHtml(t.source)}</span> 
+              → 
+              <span style="font-weight: 700; color: var(--primary);">${escapeHtml(t.destination)}</span>
+            </td>
+            <td>
+              <div>👥 ${t.travelers} Traveler(s)</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">⏱️ ${t.days} Day(s)</div>
+            </td>
+            <td>${escapeHtml(t.startDate || 'Flexi-Date')}</td>
+            <td>
+              <span class="badge badge-info">${escapeHtml(t.transportMode)}</span>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">${escapeHtml(t.travelType)}</div>
+            </td>
+            <td><strong style="color: #10b981; font-size: 0.95rem;">${escapeHtml(t.totalEstimatedCost)}</strong></td>
+            <td style="text-align: right;">
+              <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button onclick="viewTrip('${t._id}')" class="btn btn-outline btn-sm">👁️ Details</button>
+                <button onclick="deleteTrip('${t._id}', '${escapeHtml(t.destination)}')" class="btn btn-danger btn-sm">🗑️ Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterTrips() {
+      const q = document.getElementById('trip-search').value.toLowerCase().trim();
+      const transportFilter = document.getElementById('trip-transport-filter').value;
+
+      const filtered = allTrips.filter(t => {
+        const matchesQuery = !q || (
+          t.userName.toLowerCase().includes(q) ||
+          t.userEmail.toLowerCase().includes(q) ||
+          t.source.toLowerCase().includes(q) ||
+          t.destination.toLowerCase().includes(q)
+        );
+        const matchesTransport = !transportFilter || t.transportMode.toLowerCase().includes(transportFilter.toLowerCase());
+        return matchesQuery && matchesTransport;
+      });
+
+      renderTrips(filtered);
+    }
+
+    function viewTrip(id) {
+      const trip = allTrips.find(t => t._id === id);
+      if (!trip) return;
+
+      const createdDate = new Date(trip.createdAt).toLocaleDateString('en-IN', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      const modalContent = document.getElementById('trip-modal-content');
+      modalContent.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.95rem;">
+          
+          <div style="padding: 1.2rem; background: var(--primary-light); border-radius: var(--radius-md); border: 1px solid var(--primary-border); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">SAVED USER TRIP</span>
+              <h3 style="font-size: 1.4rem; color: var(--text-heading); margin: 0.1rem 0;">
+                📍 ${escapeHtml(trip.source)} to ${escapeHtml(trip.destination)}
+              </h3>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 1.25rem; font-weight: 800; color: #10b981;">${escapeHtml(trip.totalEstimatedCost)}</span>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">Est. Budget</div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+            <div>👤 <strong>User Name:</strong> ${escapeHtml(trip.userName)}</div>
+            <div>✉️ <strong>User Email:</strong> ${escapeHtml(trip.userEmail)}</div>
+            <div>👥 <strong>Number of Travelers:</strong> ${trip.travelers} Persons</div>
+            <div>⏱️ <strong>Duration:</strong> ${trip.days} Days</div>
+            <div>📅 <strong>Start Date:</strong> ${escapeHtml(trip.startDate || 'Not specified')}</div>
+            <div>🚍 <strong>Transport Mode:</strong> ${escapeHtml(trip.transportMode)}</div>
+            <div>🎭 <strong>Travel Category:</strong> ${escapeHtml(trip.travelType)}</div>
+            <div>🕒 <strong>Created On:</strong> ${createdDate}</div>
+          </div>
+
+        </div>
+      `;
+
+      document.getElementById('trip-modal').classList.add('active');
+    }
+
+    function closeTripModal() {
+      document.getElementById('trip-modal').classList.remove('active');
+    }
+
+    async function deleteTrip(id, destination) {
+      if (!confirm(`Are you sure you want to delete the saved trip to "${destination}"?`)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/trips/${id}`, {
+          method: 'DELETE'
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Trip plan to ${destination} deleted successfully!`);
+          fetchTrips();
+        } else {
+          showToast(data.message || 'Delete failed', 'danger');
+        }
+      } catch (err) {
+        showToast('Backend connection error: ' + err.message, 'danger');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

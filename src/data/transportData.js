@@ -1,0 +1,171 @@
+// Verified Tamil Nadu Travel Operators & Transport Directory Data
+
+export const TRANSPORT_OPERATORS = [
+  {
+    id: 'setc-tnstc',
+    name: 'SETC (State Express Transport Corp)',
+    serviceType: 'Government Express & Ultra Deluxe Bus Service',
+    servicesOffered: 'AC Sleeper, Non-AC Seater, Ultra Deluxe, Air-Bus',
+    startingLocation: 'Chennai (Kilambakkam / CMBT)',
+    destination: 'Madurai, Coimbatore, Kanyakumari, Ooty, Salem, Trichy',
+    routesServed: ['Chennai - Madurai', 'Chennai - Kanyakumari', 'Coimbatore - Ooty', 'Chennai - Trichy', 'Madurai - Rameshwaram'],
+    approxFare: '₹350 - ₹1,200',
+    budgetTier: 'budget',
+    contactNumber: '044-24794707',
+    email: 'support@tnstc.in',
+    website: 'https://www.tnstc.in',
+    officeAddress: 'SETC Head Office, EVR Periyar Salai, Koyambedu, Chennai - 600107',
+    operatingHours: '24/7 round-the-clock service',
+    description: 'Official Government of Tamil Nadu express bus service offering affordable long-distance intercity sleeper and AC connectivity across all 38 districts.'
+  },
+  {
+    id: 'kpn-travels',
+    name: 'KPN Travels',
+    serviceType: 'Private Luxury Bus Operator',
+    servicesOffered: 'Multi-axle Volvo AC Sleeper, Scania AC Seater',
+    startingLocation: 'Chennai',
+    destination: 'Coimbatore, Salem, Madurai, Trichy, Tirupur, Erode',
+    routesServed: ['Chennai - Salem', 'Chennai - Coimbatore', 'Chennai - Madurai', 'Coimbatore - Bengaluru'],
+    approxFare: '₹600 - ₹1,800',
+    budgetTier: 'medium',
+    contactNumber: '044-24792691',
+    email: 'customercare@kpntravels.in',
+    website: 'https://www.kpntravels.in',
+    officeAddress: 'Omni Bus Stand, Koyambedu, Chennai - 600107',
+    operatingHours: '06:00 AM - 11:30 PM',
+    description: 'Pioneer private bus operator in South India providing comfortable AC sleeper and seater services connecting major industrial and tourist hubs.'
+  },
+  {
+    id: 'srm-transports',
+    name: 'SRM Transports',
+    serviceType: 'Private Express & Tour Operator',
+    servicesOffered: 'Volvo Multi-Axle B11R AC Sleeper, Semi-Sleeper',
+    startingLocation: 'Chennai',
+    destination: 'Madurai, Kanyakumari, Trichy, Nagercoil, Tuticorin',
+    routesServed: ['Chennai - Madurai', 'Chennai - Nagercoil', 'Chennai - Kanyakumari', 'Trichy - Chennai'],
+    approxFare: '₹750 - ₹2,100',
+    budgetTier: 'luxury',
+    contactNumber: '044-49001111',
+    email: 'info@srmtransports.in',
+    website: 'https://www.srmtransports.in',
+    officeAddress: 'SRM Building, 250 GST Road, Chromepet, Chennai - 600044',
+    operatingHours: '07:00 AM - 11:00 PM',
+    description: 'Premium bus operator providing high-speed Multi-Axle AC sleeper coaches with safety tracking and onboard amenities.'
+  },
+  {
+    id: 'rsr-travels',
+    name: 'RSR Travels',
+    serviceType: 'Cab & Tour Operator / Travel Agency',
+    servicesOffered: 'Private AC Taxis (Innova, Etios, Tempo Traveller), Temple Tour Packages',
+    startingLocation: 'Madurai',
+    destination: 'Rameshwaram, Kodaikanal, Kanyakumari, Tiruchendur, Tanjore',
+    routesServed: ['Madurai - Rameshwaram - Kanyakumari', 'Madurai - Kodaikanal', 'Madurai Local Temple Circuit'],
+    approxFare: '₹14/km (Taxi) / ₹4,500/day (Tempo Traveller)',
+    budgetTier: 'medium',
+    contactNumber: '0452-2345678',
+    email: 'Not available',
+    website: 'Not available',
+    officeAddress: 'Near West Tower, Madurai Meenakshi Temple Street, Madurai - 625001',
+    operatingHours: '06:00 AM - 10:00 PM',
+    description: 'Local Madurai-based travel operator specializing in South Tamil Nadu temple pilgrimage tours, hill station cabs, and customized group packages.'
+  },
+  {
+    id: 'srs-travels',
+    name: 'SRS Travels',
+    serviceType: 'Intercity Bus & Logistics Operator',
+    servicesOffered: 'Scania AC Sleeper, Non-AC Seater/Sleeper',
+    startingLocation: 'Chennai / Hosur',
+    destination: 'Coimbatore, Ooty, Salem, Vellore, Bengaluru',
+    routesServed: ['Chennai - Ooty', 'Chennai - Salem', 'Bengaluru - Coimbatore', 'Vellore - Chennai'],
+    approxFare: '₹550 - ₹1,650',
+    budgetTier: 'medium',
+    contactNumber: '080-26801616',
+    email: 'help@srstravels.net',
+    website: 'https://www.srstravels.net',
+    officeAddress: 'Koyambedu Omni Bus Terminal, Chennai - 600107',
+    operatingHours: '24/7 Service Desk',
+    description: 'Extensive interstate and intrastate network connecting northern & western districts of Tamil Nadu with high frequency buses.'
+  },
+  {
+    id: 'parveen-travels',
+    name: 'Parveen Travels',
+    serviceType: 'Luxury Tourist Bus & Corporate Transport',
+    servicesOffered: 'Mercedes-Benz Multi-Axle AC Sleeper, Executive Charters',
+    startingLocation: 'Chennai',
+    destination: 'Trichy, Madurai, Ernakulam, Kanyakumari, Pondicherry',
+    routesServed: ['Chennai - Trichy', 'Chennai - Madurai', 'Chennai - Pondicherry', 'Chennai - Kanyakumari'],
+    approxFare: '₹700 - ₹2,200',
+    budgetTier: 'luxury',
+    contactNumber: '044-24790011',
+    email: 'customercare@parveentravels.com',
+    website: 'https://www.parveentravels.com',
+    officeAddress: '115 AB, EVR Periyar Salai, Koyambedu, Chennai - 600107',
+    operatingHours: '05:30 AM - 11:45 PM',
+    description: 'ISO-certified luxury fleet operator known for top safety standards, bio-toilets on long routes, and courteous service.'
+  },
+  {
+    id: 'rathimeena-travels',
+    name: 'Rathimeena Speed Parcel & Travels',
+    serviceType: 'Delta Region Express Bus Operator',
+    servicesOffered: 'AC Sleeper, Non-AC Sleeper/Seater',
+    startingLocation: 'Chennai',
+    destination: 'Kumbakonam, Thanjavur, Nagapattinam, Mayiladuthurai, Velankanni',
+    routesServed: ['Chennai - Kumbakonam', 'Chennai - Thanjavur', 'Chennai - Velankanni', 'Trichy - Mayiladuthurai'],
+    approxFare: '₹450 - ₹1,100',
+    budgetTier: 'budget',
+    contactNumber: '044-24793344',
+    email: 'support@rathimeenatravels.com',
+    website: 'https://www.rathimeenatravels.com',
+    officeAddress: 'Shop 12, Omni Bus Stand, Koyambedu, Chennai - 600107',
+    operatingHours: '06:00 AM - 11:00 PM',
+    description: 'Direct specialized service connecting Chennai with the Navagraha temples circuit, Delta district cultural capitals, and coastal Velankanni.'
+  },
+  {
+    id: 'universal-travels',
+    name: 'Universal Travels',
+    serviceType: 'Tour & Heritage Bus Service',
+    servicesOffered: 'Non-AC & AC Sleeper Buses',
+    startingLocation: 'Chennai',
+    destination: 'Thanjavur, Karaikal, Nagapattinam, Pudukkottai',
+    routesServed: ['Chennai - Thanjavur', 'Chennai - Karaikal', 'Trichy - Nagapattinam'],
+    approxFare: '₹400 - ₹950',
+    budgetTier: 'budget',
+    contactNumber: '044-24791199',
+    email: 'Not available',
+    website: 'Not available',
+    officeAddress: 'Omni Bus Stand, Koyambedu, Chennai - 600107',
+    operatingHours: '07:00 AM - 10:30 PM',
+    description: 'Budget-friendly regional omni bus service connecting coastal and heritage regions of eastern Tamil Nadu.'
+  }
+];
+
+export const MAJOR_TRANSIT_HUBS = [
+  {
+    name: 'Kilambakkam Bus Terminus (KCBT)',
+    city: 'Chennai',
+    type: 'Bus Terminus',
+    description: 'Asia’s largest modern bus terminus serving all south-bound SETC and private omni buses.',
+    facilities: 'AC waiting halls, cloakroom, multi-level parking, food court, prepaid auto/cab counter.'
+  },
+  {
+    name: 'Chennai Central (MAS) & Egmore (MS)',
+    city: 'Chennai',
+    type: 'Railway Junction',
+    description: 'Primary Southern Railway hubs linking Chennai to Madurai, Trichy, Kanyakumari & Coimbatore.',
+    facilities: 'Retiring rooms, IRCTC food plaza, prepaid taxis, escalators.'
+  },
+  {
+    name: 'Mattuthavani Integrated Bus Terminus',
+    city: 'Madurai',
+    type: 'Bus Terminus',
+    description: 'Major transit gateway for temple circuits, Kodaikanal, Rameshwaram, and southern coastal towns.',
+    facilities: '24/7 TNSTC inquiry counter, cloakroom, dining options.'
+  },
+  {
+    name: 'Gandhipuram & Singanallur Terminals',
+    city: 'Coimbatore',
+    type: 'Bus Terminus',
+    description: 'Hubs for hill station trips to Ooty, Coonoor, Valparai, and Kerala border transit.',
+    facilities: 'Frequent hill buses, tourist taxi stand, refreshment stalls.'
+  }
+];

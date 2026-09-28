@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Settings - Tamil Nadu Tourism</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" href="../images/logo.jpg">
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="../images/logo.jpg" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/40?text=TN'">
+        <div>
+          <div class="sidebar-brand">TN Tourism</div>
+          <div class="sidebar-tag">Admin Control</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-item"><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+        <li class="menu-item"><a href="users.html"><span>👥</span> Users</a></li>
+        <li class="menu-item"><a href="trips.html"><span>🗺️</span> Trip Planner</a></li>
+        <li class="menu-item"><a href="hotels.html"><span>🏨</span> Hotels</a></li>
+        <li class="menu-item"><a href="travels.html"><span>🚐</span> Travels & Transport</a></li>
+        <li class="menu-item"><a href="reports.html"><span>📈</span> Reports</a></li>
+        <li class="menu-item active"><a href="settings.html"><span>⚙️</span> Settings</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button onclick="adminLogout()" class="btn btn-outline" style="width: 100%; justify-content: flex-start; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+          🚪 Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="admin-main">
+      <!-- TOP NAVIGATION BAR -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h1>Admin Account & System Settings</h1>
+        </div>
+        <div class="topbar-actions">
+          <button onclick="adminLogout()" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger);">🚪 Logout Admin</button>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <div class="admin-content">
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem;">
+          
+          <!-- ADMIN PROFILE CARD -->
+          <div class="card">
+            <div class="card-header">
+              <h3>👤 Administrator Profile</h3>
+              <span class="badge badge-approved">Super Admin</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1.2rem; padding: 1rem 0; border-bottom: 1px solid var(--border-light);">
+              <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700;">
+                👑
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; color: var(--text-heading); margin-bottom: 0.2rem;" id="admin-profile-name">State Tourism Administrator</h3>
+                <div style="font-size: 0.88rem; color: var(--text-muted);" id="admin-profile-email">admin@tourism.com</div>
+                <div style="margin-top: 0.4rem;">
+                  <span class="badge badge-approved" style="font-size: 0.72rem;">Full Manager Access</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; font-size: 0.9rem;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted);">Role Permission</span>
+                <strong>Super Administrator</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted);">Assigned Portal</span>
+                <strong>Tamil Nadu Tourism Portal</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted);">Login Session</span>
+                <strong style="color: #10b981;">Active & Authenticated</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- CHANGE PASSWORD CARD -->
+          <div class="card">
+            <div class="card-header">
+              <h3>🔑 Security & Change Password</h3>
+            </div>
+
+            <form onsubmit="handleChangePassword(event)" style="display: flex; flex-direction: column; gap: 1.2rem;">
+              <div>
+                <label class="form-label">Admin Email Address</label>
+                <input type="email" id="sp-email" class="form-input" value="admin@tourism.com" readonly style="background: var(--bg-body); cursor: not-allowed;" />
+              </div>
+
+              <div>
+                <label class="form-label">Current Password *</label>
+                <input type="password" id="sp-old-password" class="form-input" placeholder="Enter current password" required />
+              </div>
+
+              <div>
+                <label class="form-label">New Password * (Min 6 characters)</label>
+                <input type="password" id="sp-new-password" class="form-input" placeholder="Enter new secure password" required minlength="6" />
+              </div>
+
+              <div>
+                <label class="form-label">Confirm New Password *</label>
+                <input type="password" id="sp-confirm-password" class="form-input" placeholder="Re-enter new password" required />
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem; justify-content: center;">
+                🔒 Update Admin Password
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+        <!-- PORTAL CONFIGURATION CARD -->
+        <div class="card" style="margin-top: 1.5rem;">
+          <div class="card-header">
+            <h3>⚙️ Platform Configuration & Operations</h3>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; font-size: 0.9rem;">
+            <div style="padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+              <div style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.3rem;">🌐 Backend Express API</div>
+              <div style="font-family: monospace; color: var(--primary); font-size: 0.85rem;">/api</div>
+              <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">Handles authentication, trip management, hotel submissions, travel services, and admin metrics.</p>
+            </div>
+
+            <div style="padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+              <div style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.3rem;">🗄️ MongoDB Database</div>
+              <div style="font-family: monospace; color: var(--primary); font-size: 0.85rem;">tn_tourism</div>
+              <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">Houses Collections for Users, Hotels, Travel Services, and Saved Trip Plans.</p>
+            </div>
+
+            <div style="padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+              <div style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.3rem;">🚪 Portal Emergency Exit</div>
+              <button onclick="adminLogout()" class="btn btn-outline btn-sm" style="margin-top: 0.4rem; color: var(--danger); border-color: var(--danger); width: 100%; justify-content: center;">
+                Clear Session & Logout
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth();
+      const admin = getAdminInfo();
+      if (admin) {
+        document.getElementById('admin-profile-name').textContent = admin.name || 'State Tourism Administrator';
+        document.getElementById('admin-profile-email').textContent = admin.email || 'admin@tourism.com';
+        document.getElementById('sp-email').value = admin.email || 'admin@tourism.com';
+      }
+    });
+
+    async function handleChangePassword(e) {
+      e.preventDefault();
+      const email = document.getElementById('sp-email').value;
+      const oldPassword = document.getElementById('sp-old-password').value;
+      const newPassword = document.getElementById('sp-new-password').value;
+      const confirmPassword = document.getElementById('sp-confirm-password').value;
+
+      if (newPassword !== confirmPassword) {
+        showToast('New password and confirmation do not match!', 'danger');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        showToast('New password must be at least 6 characters long.', 'danger');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/change-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, oldPassword, newPassword })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast('Admin password updated successfully!', 'success');
+          document.getElementById('sp-old-password').value = '';
+          document.getElementById('sp-new-password').value = '';
+          document.getElementById('sp-confirm-password').value = '';
+        } else {
+          showToast(data.message || 'Failed to update password', 'danger');
+        }
+      } catch (err) {
+        showToast('Server connection error', 'danger');
+      }
+    }
+  </script>
+</body>
+</html>

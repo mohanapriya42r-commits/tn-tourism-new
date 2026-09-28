@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travels & Transport Management - Admin Portal</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="icon" href="../images/logo.jpg">
+</head>
+<body>
+
+  <div class="admin-wrapper">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="../images/logo.jpg" alt="Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/40?text=TN'">
+        <div>
+          <div class="sidebar-brand">TN Tourism</div>
+          <div class="sidebar-tag">Admin Control</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-item"><a href="dashboard.html"><span>📊</span> Dashboard</a></li>
+        <li class="menu-item"><a href="users.html"><span>👥</span> Users</a></li>
+        <li class="menu-item"><a href="trips.html"><span>🗺️</span> Trip Planner</a></li>
+        <li class="menu-item"><a href="hotels.html"><span>🏨</span> Hotels</a></li>
+        <li class="menu-item active"><a href="travels.html"><span>🚐</span> Travels & Transport</a></li>
+        <li class="menu-item"><a href="reports.html"><span>📈</span> Reports</a></li>
+        <li class="menu-item"><a href="settings.html"><span>⚙️</span> Settings</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button onclick="adminLogout()" class="btn btn-outline" style="width: 100%; justify-content: flex-start; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+          🚪 Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="admin-main">
+      <!-- TOP NAVIGATION BAR -->
+      <header class="admin-topbar">
+        <div class="topbar-title">
+          <h1>Travels & Transport Management</h1>
+        </div>
+        <div class="topbar-actions">
+          <button onclick="openAddTravelModal()" class="btn btn-primary btn-sm">➕ Add Travel Service</button>
+          <button onclick="fetchTravels()" class="btn btn-outline btn-sm">🔄 Refresh List</button>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <div class="admin-content">
+
+        <!-- STATUS & SEARCH FILTER BAR -->
+        <div class="filter-bar" style="flex-wrap: wrap; gap: 0.8rem;">
+          <div class="tab-group">
+            <button class="tab-btn active" id="tab-all" onclick="setTab('all')">All Services</button>
+            <button class="tab-btn" id="tab-pending" onclick="setTab('Pending')">⏳ Pending</button>
+            <button class="tab-btn" id="tab-approved" onclick="setTab('Approved')">✅ Approved</button>
+            <button class="tab-btn" id="tab-rejected" onclick="setTab('Rejected')">❌ Rejected</button>
+          </div>
+
+          <div style="display: flex; gap: 0.8rem; align-items: center; flex: 1; flex-wrap: wrap; justify-content: flex-end;">
+            <input 
+              type="text" 
+              id="travel-search" 
+              class="form-input" 
+              placeholder="🔍 Search company, owner, city..." 
+              oninput="filterTravels()"
+              style="min-width: 200px; flex: 1;"
+            />
+            
+            <select id="travel-district-filter" class="form-select" onchange="filterTravels()" style="width: 160px;">
+              <option value="">All Districts</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Madurai">Madurai</option>
+              <option value="Tiruchirappalli">Tiruchirappalli</option>
+              <option value="Salem">Salem</option>
+              <option value="Tirunelveli">Tirunelveli</option>
+              <option value="Erode">Erode</option>
+              <option value="Vellore">Vellore</option>
+              <option value="Thanjavur">Thanjavur</option>
+              <option value="The Nilgiris">The Nilgiris</option>
+              <option value="Kanyakumari">Kanyakumari</option>
+              <option value="Dindigul">Dindigul</option>
+            </select>
+
+            <select id="travel-type-filter" class="form-select" onchange="filterTravels()" style="width: 140px;">
+              <option value="">All Vehicle Types</option>
+              <option value="Bus">🚌 Bus</option>
+              <option value="Van">🚐 Van</option>
+              <option value="Taxi">🚕 Taxi / Cab</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TRAVELS TABLE CARD -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Company & Vehicle</th>
+                  <th>Owner & Contact</th>
+                  <th>District / Location</th>
+                  <th>Pricing Range</th>
+                  <th>Status</th>
+                  <th>Submitted Date</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="travels-table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Loading travel services from database...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- TRAVEL VIEW & MODAL -->
+  <div class="modal-overlay" id="travel-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="travel-modal-title" style="font-size: 1.2rem; color: var(--text-heading); margin: 0;">🚐 Travel Service Information</h3>
+        <button class="modal-close" onclick="closeTravelModal()">✕</button>
+      </div>
+      
+      <div id="travel-modal-body">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script>
+    let allTravels = [];
+    let currentStatusTab = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth();
+      fetchTravels();
+    });
+
+    async function fetchTravels() {
+      try {
+        const res = await fetch(`${API_BASE}/api/travel-services/all`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.travelServices) {
+            allTravels = data.travelServices;
+            filterTravels();
+          }
+        }
+      } catch (err) {
+        console.log('Error fetching travels:', err);
+        showToast('Failed to connect to backend travels API', 'danger');
+      }
+    }
+
+    function setTab(status) {
+      currentStatusTab = status;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      if (status === 'all') document.getElementById('tab-all').classList.add('active');
+      else if (status === 'Pending') document.getElementById('tab-pending').classList.add('active');
+      else if (status === 'Approved') document.getElementById('tab-approved').classList.add('active');
+      else if (status === 'Rejected') document.getElementById('tab-rejected').classList.add('active');
+
+      filterTravels();
+    }
+
+    function filterTravels() {
+      const q = document.getElementById('travel-search').value.toLowerCase().trim();
+      const district = document.getElementById('travel-district-filter').value;
+      const type = document.getElementById('travel-type-filter').value;
+
+      const filtered = allTravels.filter(t => {
+        const matchesTab = currentStatusTab === 'all' || (t.status === currentStatusTab);
+        const matchesDistrict = !district || (t.district && t.district.toLowerCase().includes(district.toLowerCase()));
+        const matchesType = !type || (t.transportType && t.transportType.toLowerCase() === type.toLowerCase());
+        const matchesQuery = !q || (
+          t.companyName.toLowerCase().includes(q) ||
+          t.ownerName.toLowerCase().includes(q) ||
+          (t.address && t.address.toLowerCase().includes(q)) ||
+          (t.email && t.email.toLowerCase().includes(q))
+        );
+        return matchesTab && matchesDistrict && matchesType && matchesQuery;
+      });
+
+      renderTravels(filtered);
+    }
+
+    function renderTravels(travelsList) {
+      const tbody = document.getElementById('travels-table-body');
+
+      if (travelsList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              🚐 No travel services found matching selected filters.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = travelsList.map(t => {
+        const subDate = t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-IN', {
+          year: 'numeric', month: 'short', day: 'numeric'
+        }) : 'N/A';
+
+        const statusClass = t.status === 'Approved' ? 'badge-approved' : t.status === 'Rejected' ? 'badge-rejected' : 'badge-pending';
+        const typeIcon = t.transportType === 'Bus' ? '🚌 Bus' : t.transportType === 'Van' ? '🚐 Van' : '🚕 Taxi';
+
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(t.companyName)}</strong>
+              <div style="font-size: 0.78rem; color: var(--primary); font-weight: 600; margin-top: 0.1rem;">${typeIcon}</div>
+            </td>
+            <td>
+              <div>👤 ${escapeHtml(t.ownerName)}</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">📞 ${escapeHtml(t.mobile)}</div>
+            </td>
+            <td>📍 <strong>${escapeHtml(t.district)}</strong></td>
+            <td><strong style="color: #10b981;">${escapeHtml(t.priceRange || '₹15 - ₹25 / km')}</strong></td>
+            <td>
+              <span class="badge ${statusClass}">
+                ${t.status === 'Approved' ? '✅ Approved' : t.status === 'Rejected' ? '❌ Rejected' : '⏳ Pending'}
+              </span>
+            </td>
+            <td>${subDate}</td>
+            <td style="text-align: right;">
+              <div style="display: flex; gap: 0.4rem; justify-content: flex-end; flex-wrap: wrap;">
+                <button onclick="viewTravel('${t._id}')" class="btn btn-outline btn-sm">👁️ View</button>
+                ${t.status !== 'Approved' ? `<button onclick="updateTravelStatus('${t._id}', 'Approved')" class="btn btn-success btn-sm">✅ Approve</button>` : ''}
+                ${t.status !== 'Rejected' ? `<button onclick="updateTravelStatus('${t._id}', 'Rejected')" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger);">❌ Reject</button>` : ''}
+                <button onclick="deleteTravel('${t._id}', '${escapeHtml(t.companyName)}')" class="btn btn-danger btn-sm">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function viewTravel(id) {
+      const t = allTravels.find(item => item._id === id);
+      if (!t) return;
+
+      const subDate = t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-IN', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      }) : 'N/A';
+
+      const modalBody = document.getElementById('travel-modal-body');
+      document.getElementById('travel-modal-title').textContent = '🚐 ' + t.companyName;
+
+      modalBody.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.95rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+            <div>
+              <span class="badge ${t.status === 'Approved' ? 'badge-approved' : t.status === 'Rejected' ? 'badge-rejected' : 'badge-pending'}">
+                Status: ${t.status}
+              </span>
+              <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.3rem;">Submitted On: ${subDate}</div>
+            </div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #10b981;">
+              ${escapeHtml(t.priceRange || 'N/A')}
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+            <div>👤 <strong>Owner Name:</strong> ${escapeHtml(t.ownerName)}</div>
+            <div>📞 <strong>Mobile Number:</strong> <a href="tel:${t.mobile}" style="color: var(--primary);">${escapeHtml(t.mobile)}</a></div>
+            <div>✉️ <strong>Email Address:</strong> ${t.email ? `<a href="mailto:${t.email}" style="color: var(--primary);">${escapeHtml(t.email)}</a>` : '<span style="color: var(--text-muted);">Not provided</span>'}</div>
+            <div>📍 <strong>District:</strong> ${escapeHtml(t.district)}</div>
+            <div>🚘 <strong>Transport Type:</strong> ${escapeHtml(t.transportType)}</div>
+            <div style="grid-column: span 2;">📍 <strong>Full Address:</strong> ${escapeHtml(t.address)}</div>
+          </div>
+
+          <div>
+            <strong style="color: var(--text-heading); display: block; margin-bottom: 0.3rem;">📝 Description:</strong>
+            <p style="color: var(--text-main); font-size: 0.92rem; line-height: 1.5; white-space: pre-line;">${escapeHtml(t.description)}</p>
+          </div>
+
+          ${t.services && t.services.length > 0 ? `
+            <div>
+              <strong style="color: var(--text-heading); display: block; margin-bottom: 0.4rem;">✨ Special Services Offered:</strong>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                ${t.services.map(s => `<span style="padding: 0.2rem 0.6rem; background: var(--primary-light); color: var(--primary); border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">✓ ${escapeHtml(s)}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--border-light); margin-top: 0.5rem;">
+            ${t.status !== 'Approved' ? `<button onclick="updateTravelStatus('${t._id}', 'Approved'); closeTravelModal();" class="btn btn-success" style="flex: 1;">✅ Approve Service</button>` : ''}
+            ${t.status !== 'Rejected' ? `<button onclick="updateTravelStatus('${t._id}', 'Rejected'); closeTravelModal();" class="btn btn-danger" style="flex: 1;">❌ Reject Service</button>` : ''}
+            ${t.location ? `<a href="${t.location}" target="_blank" class="btn btn-outline" style="text-decoration: none;">🗺️ Map Link ↗</a>` : ''}
+            ${t.website ? `<a href="${t.website}" target="_blank" class="btn btn-outline" style="text-decoration: none;">🌐 Website ↗</a>` : ''}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('travel-modal').classList.add('active');
+    }
+
+    function openAddTravelModal() {
+      const modalBody = document.getElementById('travel-modal-body');
+      document.getElementById('travel-modal-title').textContent = '➕ Add New Travel / Transport Service';
+
+      modalBody.innerHTML = `
+        <form id="add-travel-form" onsubmit="handleAddTravel(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label class="form-label">Company / Travel Name *</label>
+              <input type="text" id="t-company" class="form-input" placeholder="e.g. Madurai Express Cabs" required />
+            </div>
+            <div>
+              <label class="form-label">Owner Name *</label>
+              <input type="text" id="t-owner" class="form-input" placeholder="e.g. R. Kanthasamy" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label class="form-label">Mobile Number *</label>
+              <input type="tel" id="t-mobile" class="form-input" placeholder="e.g. 9876543210" required />
+            </div>
+            <div>
+              <label class="form-label">Email Address</label>
+              <input type="email" id="t-email" class="form-input" placeholder="owner@travels.com" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label class="form-label">District *</label>
+              <select id="t-district" class="form-select" required>
+                <option value="Chennai">Chennai</option>
+                <option value="Coimbatore">Coimbatore</option>
+                <option value="Madurai" selected>Madurai</option>
+                <option value="Tiruchirappalli">Tiruchirappalli</option>
+                <option value="Salem">Salem</option>
+                <option value="Tirunelveli">Tirunelveli</option>
+                <option value="Erode">Erode</option>
+                <option value="Vellore">Vellore</option>
+                <option value="Thanjavur">Thanjavur</option>
+                <option value="The Nilgiris">The Nilgiris</option>
+                <option value="Kanyakumari">Kanyakumari</option>
+                <option value="Dindigul">Dindigul</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Transport Type *</label>
+              <select id="t-type" class="form-select" required>
+                <option value="Taxi">🚕 Taxi / Cab</option>
+                <option value="Bus">🚌 Bus</option>
+                <option value="Van">🚐 Van</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Full Address *</label>
+            <input type="text" id="t-address" class="form-input" placeholder="Full office address with pincode" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label class="form-label">Price Range</label>
+              <input type="text" id="t-price" class="form-input" placeholder="e.g. ₹15 - ₹22 / km" />
+            </div>
+            <div>
+              <label class="form-label">Special Services (Comma Separated)</label>
+              <input type="text" id="t-services" class="form-input" placeholder="e.g. 24x7 Pickup, AC Bus, Outstation" />
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Description *</label>
+            <textarea id="t-desc" class="form-input" rows="3" placeholder="Brief description of routes, fleets, and features" required></textarea>
+          </div>
+
+          <div style="display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 0.5rem;">
+            <button type="button" onclick="closeTravelModal()" class="btn btn-outline">Cancel</button>
+            <button type="submit" class="btn btn-primary">➕ Save Travel Service</button>
+          </div>
+        </form>
+      `;
+
+      document.getElementById('travel-modal').classList.add('active');
+    }
+
+    async function handleAddTravel(e) {
+      e.preventDefault();
+      const payload = {
+        companyName: document.getElementById('t-company').value.trim(),
+        ownerName: document.getElementById('t-owner').value.trim(),
+        mobile: document.getElementById('t-mobile').value.trim(),
+        email: document.getElementById('t-email').value.trim(),
+        district: document.getElementById('t-district').value,
+        transportType: document.getElementById('t-type').value,
+        address: document.getElementById('t-address').value.trim(),
+        priceRange: document.getElementById('t-price').value.trim() || '₹15 - ₹25 / km',
+        services: document.getElementById('t-services').value.split(',').map(s => s.trim()).filter(Boolean),
+        description: document.getElementById('t-desc').value.trim(),
+        status: 'Approved' // Admin created travels are approved immediately
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/api/travel-services`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          // Update status to Approved if it default-created as Pending
+          if (data.travelService && data.travelService._id) {
+            await fetch(`${API_BASE}/api/travel-services/${data.travelService._id}/status`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: 'Approved' })
+            });
+          }
+          showToast('Travel service added and approved successfully!', 'success');
+          closeTravelModal();
+          fetchTravels();
+        } else {
+          showToast(data.message || 'Failed to add travel service', 'danger');
+        }
+      } catch (err) {
+        showToast('Server connection error', 'danger');
+      }
+    }
+
+    async function updateTravelStatus(id, newStatus) {
+      try {
+        const res = await fetch(`${API_BASE}/api/travel-services/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast(`Travel service status updated to ${newStatus}`, 'success');
+          fetchTravels();
+        } else {
+          showToast(data.message || 'Failed to update status', 'danger');
+        }
+      } catch (err) {
+        showToast('Server error during status update', 'danger');
+      }
+    }
+
+    async function deleteTravel(id, name) {
+      if (!confirm(`Are you sure you want to permanently delete travel service "${name}"?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/travel-services/${id}`, {
+          method: 'DELETE'
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast(`Travel service "${name}" deleted successfully`, 'success');
+          fetchTravels();
+        } else {
+          showToast(data.message || 'Failed to delete travel service', 'danger');
+        }
+      } catch (err) {
+        showToast('Server error while deleting service', 'danger');
+      }
+    }
+
+    function closeTravelModal() {
+      document.getElementById('travel-modal').classList.remove('active');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
