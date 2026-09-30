@@ -67,7 +67,7 @@ export function AIFloatingWidget() {
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontWeight: 700, fontSize: '0.98rem', color: '#ffffff', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  TN Travel AI Assistant
+                  TN-Tourism AI Assistant
                 </div>
                 <div style={{ fontSize: '0.72rem', color: '#6ee7b7', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px', fontWeight: 600 }}>
                   <span style={{ width: '7px', height: '7px', backgroundColor: '#10b981', borderRadius: '50%', display: 'inline-block' }} />

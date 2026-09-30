@@ -36,7 +36,7 @@ export function HotelCard({ hotel }) {
 
         {/* Title and Price */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', margin: 0 }}>{hotel.name}</h4>
+          <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-heading, #1e1b4b)', margin: 0 }}>{hotel.name}</h4>
           <span style={{ fontWeight: 800, color: '#fbbf24', fontSize: '1.05rem', whiteSpace: 'nowrap' }}>{hotel.price}</span>
         </div>
 

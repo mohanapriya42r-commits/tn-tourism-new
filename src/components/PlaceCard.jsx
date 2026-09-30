@@ -32,7 +32,7 @@ export function PlaceCard({ place }) {
 
       <div className="place-card-body">
         <div className="place-category">{place.categoryName || place.category}</div>
-        <h3 className="place-title">{place.name}</h3>
+        <h3 className="place-title" style={{ color: 'var(--text-heading, #1e1b4b)' }}>{place.name}</h3>
 
         <div className="place-rating">
           <StarRating rating={place.rating} />

@@ -667,19 +667,36 @@ export function TripPlanner() {
                             boxShadow: 'var(--glass-shadow)'
                           }}
                         >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.6rem', borderBottom: '1px solid var(--border-dark)' }}>
-                            <h4 style={{ fontSize: '1.15rem', color: 'var(--text-heading)', margin: 0, fontWeight: 700 }}>
-                              {day.title}
-                            </h4>
-                            <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', fontWeight: 700 }}>
-                              Day {day.dayNumber}
-                            </span>
+                          <div style={{ marginBottom: '1rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem', paddingBottom: '0.6rem', borderBottom: '1px solid var(--border-dark)' }}>
+                              <div>
+                                <h4 style={{ fontSize: '1.15rem', color: 'var(--text-heading)', margin: 0, fontWeight: 700 }}>
+                                  {day.title}
+                                </h4>
+                                {day.theme && (
+                                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.2rem' }}>
+                                    ✨ Focus: {day.theme}
+                                  </span>
+                                )}
+                              </div>
+                              <span style={{ background: 'var(--primary-light)', color: 'var(--primary)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', fontWeight: 700 }}>
+                                Day {day.dayNumber}
+                              </span>
+                            </div>
+
+                            {/* Suggested Visit Order & Distinct Tourist Places for Day */}
+                            {day.suggestedVisitOrder && (
+                              <div style={{ background: 'rgba(217, 119, 6, 0.08)', border: '1px solid rgba(217, 119, 6, 0.25)', borderRadius: 'var(--radius-sm)', padding: '0.5rem 0.8rem', marginBottom: '0.8rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                <strong style={{ color: 'var(--primary)' }}>🚶‍♂️ Suggested Visit Order:</strong>
+                                <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>{day.suggestedVisitOrder}</span>
+                              </div>
+                            )}
                           </div>
 
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
                             {/* Morning Slot */}
                             <div style={{ background: 'var(--input-bg)', padding: '0.9rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-dark)' }}>
-                              <span style={{ fontSize: '0.75rem', color: '#d97706', fontWeight: 700, uppercase: 'true' }}>
+                              <span style={{ fontSize: '0.75rem', color: '#d97706', fontWeight: 700, textTransform: 'uppercase' }}>
                                 🌅 Morning ({day.schedule.morning.time})
                               </span>
                               <h5 style={{ fontSize: '1.05rem', color: 'var(--text-heading)', margin: '0.2rem 0 0.3rem', fontWeight: 700 }}>
@@ -688,7 +705,7 @@ export function TripPlanner() {
                               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
                                 {day.schedule.morning.activity}
                               </p>
-                              <div style={{ marginTop: '0.4rem', fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', gap: '1rem' }}>
+                              <div style={{ marginTop: '0.4rem', fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                                 <span>📍 Est. Distance: {day.schedule.morning.distance}</span>
                                 <span>🎟️ Fee: {day.schedule.morning.entryFee}</span>
                               </div>
@@ -696,7 +713,7 @@ export function TripPlanner() {
 
                             {/* Afternoon Slot */}
                             <div style={{ background: 'var(--input-bg)', padding: '0.9rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-dark)' }}>
-                              <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 700 }}>
+                              <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 700, textTransform: 'uppercase' }}>
                                 ☀️ Afternoon ({day.schedule.afternoon.time})
                               </span>
                               <h5 style={{ fontSize: '1.05rem', color: 'var(--text-heading)', margin: '0.2rem 0 0.3rem', fontWeight: 700 }}>
@@ -705,7 +722,7 @@ export function TripPlanner() {
                               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
                                 {day.schedule.afternoon.activity}
                               </p>
-                              <div style={{ marginTop: '0.4rem', fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', gap: '1rem' }}>
+                              <div style={{ marginTop: '0.4rem', fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                                 <span>🍴 Meal Spot: {day.schedule.afternoon.lunchSpot}</span>
                                 <span>⏱️ Travel Time: {day.schedule.afternoon.estimatedTravelTime}</span>
                               </div>
@@ -713,7 +730,7 @@ export function TripPlanner() {
 
                             {/* Evening Slot */}
                             <div style={{ background: 'var(--input-bg)', padding: '0.9rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-dark)' }}>
-                              <span style={{ fontSize: '0.75rem', color: '#7c3aed', fontWeight: 700 }}>
+                              <span style={{ fontSize: '0.75rem', color: '#7c3aed', fontWeight: 700, textTransform: 'uppercase' }}>
                                 🌆 Evening ({day.schedule.evening.time})
                               </span>
                               <h5 style={{ fontSize: '1.05rem', color: 'var(--text-heading)', margin: '0.2rem 0 0.3rem', fontWeight: 700 }}>
@@ -722,6 +739,10 @@ export function TripPlanner() {
                               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
                                 {day.schedule.evening.activity}
                               </p>
+                              <div style={{ marginTop: '0.4rem', fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                                <span>⏱️ Travel Time: {day.schedule.evening.estimatedTravelTime || '15-20 mins'}</span>
+                                <span>🎟️ Fee: {day.schedule.evening.entryFee || 'Free Entry'}</span>
+                              </div>
                             </div>
 
                             {/* Night Slot */}

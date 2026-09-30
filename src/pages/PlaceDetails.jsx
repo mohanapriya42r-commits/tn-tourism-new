@@ -96,15 +96,19 @@ export function PlaceDetails() {
                   <span className="badge badge-secondary">{place.district}</span>
                   <span className="badge badge-primary">{place.categoryName || place.category}</span>
                 </div>
-                <h1 style={{ fontSize: '2.8rem' }}>{place.name}</h1>
-                <div style={{ fontSize: '1.1rem', marginTop: '0.3rem' }}>
-                  <StarRating rating={place.rating} /> ({place.ratingCount ? place.ratingCount.toLocaleString() : 500}+ ratings)
+                <h1 style={{ fontSize: '2.8rem', color: '#ffffff', textShadow: '0 2px 14px rgba(0,0,0,0.95)' }}>{place.name}</h1>
+                <div style={{ fontSize: '1.1rem', marginTop: '0.3rem', color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <StarRating rating={place.rating} /> 
+                  <span style={{ color: '#f8fafc', textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
+                    ({place.ratingCount ? place.ratingCount.toLocaleString() : 500}+ ratings)
+                  </span>
                 </div>
               </div>
 
               <div>
                 <button
                   className={`btn ${favActive ? 'btn-primary' : 'btn-outline'}`}
+                  style={!favActive ? { background: 'rgba(255, 255, 255, 0.18)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255, 255, 255, 0.45)', color: '#ffffff', fontWeight: 600 } : {}}
                   onClick={(e) => toggleFavorite(place.id, e)}
                 >
                   {favActive ? '❤️ Saved in Favorites' : '♡ Save to Favorites'}
@@ -129,7 +133,7 @@ export function PlaceDetails() {
 
               {place.attractions && place.attractions.length > 0 && (
                 <>
-                  <h4 style={{ marginBottom: '0.8rem', fontSize: '1.1rem', color: '#ffffff' }}>✨ Main Attractions</h4>
+                  <h4 style={{ marginBottom: '0.8rem', fontSize: '1.1rem', color: 'var(--text-heading)' }}>✨ Main Attractions</h4>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '1.8rem' }}>
                     {place.attractions.map((attr, i) => (
                       <span key={i} className="badge badge-primary" style={{ fontSize: '0.85rem' }}>
@@ -142,57 +146,12 @@ export function PlaceDetails() {
 
               {place.history && (
                 <>
-                  <h4 style={{ marginBottom: '0.6rem', fontSize: '1.1rem', color: '#ffffff' }}>🏛️ History & Cultural Importance</h4>
+                  <h4 style={{ marginBottom: '0.6rem', fontSize: '1.1rem', color: 'var(--text-heading)' }}>🏛️ History & Cultural Importance</h4>
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6' }}>
                     {place.history}
                   </p>
                 </>
               )}
-            </div>
-
-            {/* Transportation Box */}
-            <div className="info-card-box">
-              <h3>🚌 Transportation & Accessibility</h3>
-              <div className="transport-grid">
-                <div className="transport-card">
-                  <div className="transport-icon">🚌</div>
-                  <h4 style={{ fontSize: '1.05rem', marginBottom: '0.3rem' }}>Bus Availability</h4>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.3rem' }}>
-                    {place.transport?.bus?.station || 'Central Bus Stand'} ({place.transport?.bus?.distance || '2 km'})
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    {place.transport?.bus?.available || 'Frequent government & private buses'}
-                  </div>
-                  <Link to="/transport/bus" style={{ display: 'inline-block', marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--primary)' }}>
-                    Bus Route Guide →
-                  </Link>
-                </div>
-
-                <div className="transport-card">
-                  <div className="transport-icon">🚆</div>
-                  <h4 style={{ fontSize: '1.05rem', marginBottom: '0.3rem' }}>Train Availability</h4>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--secondary)', marginBottom: '0.3rem' }}>
-                    {place.transport?.train?.station || 'Railway Junction'} ({place.transport?.train?.distance || '3 km'})
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    {place.transport?.train?.frequency || 'Direct train connectivity across South India'}
-                  </div>
-                  <Link to="/transport/train" style={{ display: 'inline-block', marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--secondary)' }}>
-                    Train Schedule Guide →
-                  </Link>
-                </div>
-
-                <div className="transport-card">
-                  <div className="transport-icon">🚕</div>
-                  <h4 style={{ fontSize: '1.05rem', marginBottom: '0.3rem' }}>Local Taxi & Autos</h4>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
-                    {place.transport?.taxi?.options || 'Ola, Uber, Auto Rickshaws, pre-paid station cabs available 24x7.'}
-                  </div>
-                  <Link to="/transport/taxi" style={{ display: 'inline-block', marginTop: '0.5rem', fontSize: '0.8rem', color: '#60a5fa' }}>
-                    Taxi Rates Guide →
-                  </Link>
-                </div>
-              </div>
             </div>
 
             {/* Interactive Leaflet Map */}
@@ -301,7 +260,7 @@ export function PlaceDetails() {
                   reviews.map((r) => (
                     <div key={r.id} style={{ background: 'rgba(255,255,255,0.04)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-dark)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                        <strong style={{ color: '#fff' }}>👤 {r.userName}</strong>
+                        <strong style={{ color: 'var(--text-heading)' }}>👤 {r.userName}</strong>
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{r.date}</span>
                       </div>
                       <div style={{ marginBottom: '0.4rem' }}>
@@ -326,17 +285,17 @@ export function PlaceDetails() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Opening Time</div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>{place.openTime}</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-heading)' }}>{place.openTime}</div>
                 </div>
 
                 <div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Closing Time</div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#fff' }}>{place.closeTime}</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-heading)' }}>{place.closeTime}</div>
                 </div>
 
                 <div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Weekly Holiday</div>
-                  <div style={{ fontSize: '1rem', fontWeight: 600, color: '#fff' }}>{place.holiday || 'None (Open Daily)'}</div>
+                  <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-heading)' }}>{place.holiday || 'None (Open Daily)'}</div>
                 </div>
 
                 <div>

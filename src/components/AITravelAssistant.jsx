@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TN_DATA } from '../data/tourismData';
-import { FESTIVAL_DATA } from '../data/festivalData';
-import { TRANSPORT_OPERATORS } from '../data/transportData';
+import { getAIResponse } from '../utils/aiKnowledgeEngine';
 
 export function AITravelAssistant({ inline = false }) {
   const [messages, setMessages] = useState([
     {
       sender: 'ai',
-      text: 'Vanakkam! 🙏 I am your TN Tourism AI Travel Assistant. Ask me anything in English or Tanglish (e.g. "RSR Travels details kudu", "Chennai la irundhu Ooty ku affordable ah epdi pogalam?", "3 days Kodaikanal trip plan pannu")!'
+      text: 'Vanakkam! 🙏 I am your TN Tourism AI Assistant. Ask me ANY question or doubt about our website features (Trip Planner, Tourist Places, Hotels, Restaurants, Transport, Emergency, Festivals, Manager Portal) or Tamil Nadu travel in English or Tanglish!'
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
   const quickPrompts = [
-    '🚌 RSR Travels details',
+    '🗺️ 3 days Kodai trip plan',
+    '✨ Website features enna?',
+    '🏨 How to add my hotel?',
+    '🚨 Emergency helplines',
+    '🚌 RSR Travels contact',
     '⛰️ Chennai to Ooty route',
-    '🌿 3 days Kodai trip plan',
-    '👨‍👩‍👧 Family places in TN',
-    '🍛 Madurai food spots'
+    '🍛 Madurai food spots',
+    '❤️ Favorites epdi save panradhu?'
   ];
 
   const handleSendQuery = (queryText) => {
@@ -32,173 +33,15 @@ export function AITravelAssistant({ inline = false }) {
     setIsTyping(true);
 
     setTimeout(() => {
-      let response = generateAIResponse(userQuery);
+      let response = getAIResponse(userQuery);
       setMessages((prev) => [...prev, { sender: 'ai', text: response }]);
       setIsTyping(false);
-    }, 500);
+    }, 400);
   };
 
   const handleSend = (e) => {
     e.preventDefault();
     handleSendQuery(input);
-  };
-
-  const generateAIResponse = (query) => {
-    const q = query.toLowerCase();
-
-    // 1. Travel Operator Direct Search (e.g., "RSR Travels", "SETC", "KPN", "SRM", "Parveen")
-    const matchedOperator = TRANSPORT_OPERATORS.find(op => 
-      q.includes(op.id.toLowerCase()) || 
-      q.includes(op.name.toLowerCase()) ||
-      (q.includes('rsr') && op.id === 'rsr-travels') ||
-      (q.includes('setc') && op.id === 'setc-tnstc') ||
-      (q.includes('kpn') && op.id === 'kpn-travels') ||
-      (q.includes('srm') && op.id === 'srm-transports') ||
-      (q.includes('parveen') && op.id === 'parveen-travels') ||
-      (q.includes('rathimeena') && op.id === 'rathimeena-travels')
-    );
-
-    if (matchedOperator || q.includes('travel agency') || q.includes('travel operator') || q.includes('tour operator')) {
-      if (matchedOperator) {
-        return `🚌 ${matchedOperator.name}\n\n` +
-          `• Service Type: ${matchedOperator.serviceType}\n` +
-          `• Services Offered: ${matchedOperator.servicesOffered}\n` +
-          `• Starting Location: ${matchedOperator.startingLocation}\n` +
-          `• Destinations: ${matchedOperator.destination}\n` +
-          `• Approximate Fare: ${matchedOperator.approxFare}\n` +
-          `• Contact Number: ${matchedOperator.contactNumber}\n` +
-          `• Email: ${matchedOperator.email}\n` +
-          `• Website: ${matchedOperator.website}\n` +
-          `• Office Address: ${matchedOperator.officeAddress}\n` +
-          `• Operating Hours: ${matchedOperator.operatingHours}\n\n` +
-          `📝 Description: ${matchedOperator.description}`;
-      } else if (q.includes('rsr')) {
-        const rsr = TRANSPORT_OPERATORS.find(op => op.id === 'rsr-travels');
-        if (rsr) {
-          return `🚌 ${rsr.name}\n\n` +
-            `• Service Type: ${rsr.serviceType}\n` +
-            `• Services Offered: ${rsr.servicesOffered}\n` +
-            `• Starting Location: ${rsr.startingLocation}\n` +
-            `• Destinations: ${rsr.destination}\n` +
-            `• Approximate Fare: ${rsr.approxFare}\n` +
-            `• Contact Number: ${rsr.contactNumber}\n` +
-            `• Email: ${rsr.email}\n` +
-            `• Website: ${rsr.website}\n` +
-            `• Address: ${rsr.officeAddress}\n\n` +
-            `📝 Description: ${rsr.description}`;
-        }
-      }
-    }
-
-    // 2. Specific Route & Affordable Transit Queries (e.g. "Chennai la irundhu Ooty ku affordable ah epdi pogalam?")
-    if (
-      (q.includes('chennai') && q.includes('ooty')) ||
-      (q.includes('epdi pogalam') || q.includes('how to reach') || q.includes('affordable transport') || q.includes('route'))
-    ) {
-      if (q.includes('chennai') && q.includes('ooty')) {
-        return `⛰️ Affordable Route from Chennai to Ooty:\n\n` +
-          `1. 🚌 By SETC / TNSTC Bus (Most Budget-Friendly):\n` +
-          `   • Direct overnight SETC Ultra Deluxe AC / Sleeper from Kilambakkam (KCBT) to Ooty.\n` +
-          `   • Travel Time: ~11 - 12 hours | Approx Fare: ₹650 – ₹950 per person.\n\n` +
-          `2. 🚆 By Train + Toy Train (Scenic Route):\n` +
-          `   • Take Nilgiri Express (Train #12671) overnight from Chennai Central (MAS) to Mettupalayam (MTP).\n` +
-          `   • Sleeper Fare: ~₹350 | 3AC: ~₹900.\n` +
-          `   • Connect from Mettupalayam to Ooty via UNESCO Heritage Nilgiri Mountain Railway (Toy Train) or local bus (~₹35 - ₹150).\n\n` +
-          `3. 🚕 Private Cab / Taxi:\n` +
-          `   • Approx fare ₹8,500 – ₹11,000 for full vehicle.\n\n` +
-          `💡 Smart Tip: Book SETC bus or Nilgiri Express 15-30 days in advance for peak weekend travel!`;
-      }
-    }
-
-    // 3. Trip Plan & Itinerary Generation (e.g. "3 days Kodaikanal trip plan pannu" or "plan trip for 3 days")
-    if (q.includes('trip plan') || q.includes('itinerary') || q.includes('plan pannu') || q.includes('days trip')) {
-      if (q.includes('kodai') || q.includes('kodaikanal')) {
-        return `🌿 3-Day Kodaikanal Budget Trip Itinerary:\n\n` +
-          `🗓️ Day 1: Lake & Local Sights\n` +
-          `   • Morning: Arrive & check-in. Visit Kodaikanal Lake (Boating ₹150) & Coaker's Walk (Viewpoint).\n` +
-          `   • Afternoon: Bryant Park floral gardens.\n` +
-          `   • Evening: Shopping at Seven Roads Junction for handmade chocolates & essential oils.\n\n` +
-          `🗓️ Day 2: Pine Forests & Viewpoints\n` +
-          `   • Morning: Pillar Rocks, Pine Forest & Moir Point.\n` +
-          `   • Afternoon: Guna Caves & Green Valley View.\n` +
-          `   • Evening: Mannavanur Lake & Sheep Farm (Quiet nature spot).\n\n` +
-          `🗓️ Day 3: Waterfalls & Return\n` +
-          `   • Morning: Silver Cascade Waterfalls & Bear Shola Falls.\n` +
-          `   • Afternoon: Local lunch mess & souvenir shopping before departure.\n\n` +
-          `💰 Estimated Cost (per person): ₹3,500 – ₹5,200 (Includes SETC bus, budget homestay & meals).\n\n` +
-          `✨ You can also generate custom day plans using our interactive Trip Planner module!`;
-      }
-    }
-
-    // 4. Family Destination Suggestions (e.g. "Tamil Nadu la family ku best tourist places enna?")
-    if (q.includes('family') || q.includes('kids') || q.includes('family places') || q.includes('family trip')) {
-      return `👨‍👩‍👧‍👦 Top Recommended Family Tourist Destinations in Tamil Nadu:\n\n` +
-        `1. ⛰️ Ooty & Coonoor (Nilgiris): Cool climate, Botanical Gardens, Toy Train ride, and tea estate walks.\n` +
-        `2. 🏖️ Mahabalipuram & ECR Coast: Shore Temple, Pancha Rathas, beach resorts, and crocodile bank.\n` +
-        `3. 🛕 Tanjore & Trichy: Grand Brihadeeswarar Temple, Srirangam, and heritage culture.\n` +
-        `4. 🌊 Rameshwaram & Dhanushkodi: Pamban Sea Bridge, APJ Abdul Kalam Memorial, and calm holy beaches.\n` +
-        `5. 🌿 Kodaikanal: Lake boating, Pine Forests, and kid-friendly parks.\n\n` +
-        `Visit our Tourist Places or Categories page to filter destinations by family interests!`;
-    }
-
-    // 5. Greetings & Tanglish Salutations
-    if (q.includes('vanakkam') || q.includes('hello') || q.includes('hi') || q.includes('namaste') || q.includes('epdi') || q.includes('good morning')) {
-      return 'Vanakkam! 🙏 Welcome to TN Tourism! How can I assist your travel today? You can ask about places, RSR Travels details, bus/train routes, family destinations, or 3-day trip plans!';
-    }
-
-    // 6. Food, Dining & Local Cuisine
-    if (q.includes('food') || q.includes('eat') || q.includes('saapadu') || q.includes('chettinad') || q.includes('idli') || q.includes('dosa') || q.includes('jigarthanda') || q.includes('restaurant')) {
-      return '🍛 Iconic Tamil Nadu Food Specialties:\n\n' +
-        '• Madurai: Famous Jigarthanda, Kari Dosa, Murugan Idli Shop & Amma Mess.\n' +
-        '• Chennai: Filter Coffee, Mylapore Ghee Roast Dosa, Sowcarpet street food.\n' +
-        '• Tanjore & Trichy: Traditional Banana Leaf South Indian Meals & Srirangam Rava Dosa.\n' +
-        '• Chettinad (Karaikudi): Spicy Pepper Chicken, Meen Kuzhambu, and Seepu Seedai.\n\n' +
-        'Check out our Restaurants module to explore curated dining spots!';
-    }
-
-    // 7. Direct Destination Match in TN_DATA
-    const placeMatch = TN_DATA.places.find(p =>
-      q.includes(p.name.toLowerCase()) ||
-      q.includes(p.district.toLowerCase()) ||
-      (p.attractions && p.attractions.some(a => q.includes(a.toLowerCase())))
-    );
-
-    if (placeMatch) {
-      return `📍 ${placeMatch.name} (${placeMatch.district} District)\n\n` +
-        `⭐ Rating: ${placeMatch.rating} / 5 (${placeMatch.ratingCount} reviews)\n` +
-        `🎟️ Entry Fee: ${placeMatch.entryFee}\n` +
-        `🕒 Timings: ${placeMatch.openTime} - ${placeMatch.closeTime}\n` +
-        `🗓️ Best Season to Visit: ${placeMatch.bestTime}\n\n` +
-        `📝 Overview: ${placeMatch.shortDesc}\n\n` +
-        `✨ Top Attractions: ${placeMatch.attractions ? placeMatch.attractions.slice(0, 3).join(', ') : 'Heritage & Scenery'}`;
-    }
-
-    // 8. Categories Matching
-    const catMatch = TN_DATA.categories.find(c => q.includes(c.id) || q.includes(c.name.toLowerCase()));
-    if (catMatch || q.includes('temple') || q.includes('kovil') || q.includes('beach') || q.includes('hill') || q.includes('waterfall')) {
-      let catId = catMatch ? catMatch.id : (q.includes('temple') || q.includes('kovil') ? 'temples' : (q.includes('beach') ? 'beaches' : (q.includes('hill') ? 'hillstations' : 'historical')));
-      let matchingPlaces = TN_DATA.places.filter(p => p.category === catId).slice(0, 4);
-      if (matchingPlaces.length > 0) {
-        let listStr = matchingPlaces.map(p => `• ${p.name} (${p.district}) - ⭐ ${p.rating}`).join('\n');
-        return `🌟 Recommended Tamil Nadu Destinations:\n\n${listStr}\n\nExplore our Tourist Places tab for complete district details!`;
-      }
-    }
-
-    // 9. Website Modules Inquiry
-    if (q.includes('module') || q.includes('feature') || q.includes('website') || q.includes('services')) {
-      return `📱 Available TN Tourism Website Modules:\n\n` +
-        `1. 📍 Tourist Places (38 Districts & Detailed Attractions)\n` +
-        `2. 🩵 Categories (Temples, Beaches, Hills, Waterfalls & Heritage)\n` +
-        `3. 🔮 Smart Trip Planner (Personalized itineraries & budget breakdown)\n` +
-        `4. 🚌 Travel & Transport Directory (Verified operators like RSR Travels, SETC, fares & schedules)\n` +
-        `5. 🛌 Hotels & Accommodation\n` +
-        `6. 🍴 Restaurants & Cuisine\n` +
-        `7. 📅 Festival Calendar`;
-    }
-
-    // 10. Accurate Unavailable Fallback (No Hallucinations)
-    return `Information for "${query}" is currently unavailable in the website database.\n\n` +
-      `Try asking about verified operators like "RSR Travels" or "SETC", routes like "Chennai to Ooty", "3 days Kodaikanal trip plan", or specific districts like Madurai, Tanjore, Rameshwaram, or Kanyakumari! 🙏`;
   };
 
   return (
@@ -246,7 +89,7 @@ export function AITravelAssistant({ inline = false }) {
             </div>
             <div>
               <h3 style={{ fontSize: '1.05rem', color: 'var(--text-heading)', margin: 0, fontWeight: 700 }}>
-                TN Travel AI Assistant
+                TN-Tourism AI Assistant
               </h3>
               <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>
                 ● Online • Verified Website Database
@@ -292,7 +135,7 @@ export function AITravelAssistant({ inline = false }) {
         ))}
         {isTyping && (
           <div style={{ alignSelf: 'flex-start', color: 'var(--text-muted)', fontSize: '0.82rem', fontStyle: 'italic' }}>
-            TN AI Travel Assistant is finding verified response...
+            TN-Tourism AI Assistant is finding verified response...
           </div>
         )}
       </div>

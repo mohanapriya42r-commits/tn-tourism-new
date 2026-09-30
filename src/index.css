@@ -801,7 +801,7 @@ img {
   font-size: 1.3rem;
   font-weight: 700;
   margin-bottom: 0.6rem;
-  color: #ffffff;
+  color: var(--text-heading, #1e1b4b);
 }
 
 .place-desc {
@@ -846,6 +846,27 @@ img {
   width: 100%;
   padding: 3rem 2rem 2rem;
   background: linear-gradient(to top, rgba(9, 13, 22, 0.95), transparent);
+  color: #ffffff;
+}
+
+.detail-hero-overlay h1 {
+  color: #ffffff !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+}
+
+.detail-hero-overlay .btn-outline {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.detail-hero-overlay .btn-outline:hover {
+  background: rgba(255, 255, 255, 0.32);
+  border-color: #ffffff;
+  color: #ffffff;
+  transform: translateY(-2px);
 }
 
 .detail-grid {
@@ -894,7 +915,7 @@ img {
 .info-item .value {
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-heading, #1e1b4b);
 }
 
 /* Transport Cards */

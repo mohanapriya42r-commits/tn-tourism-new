@@ -231,33 +231,115 @@
         year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
       });
 
+      // Format unique places list
+      const placesList = Array.isArray(trip.places) && trip.places.length > 0 
+        ? trip.places 
+        : (trip.itinerary ? trip.itinerary.flatMap(d => [d.schedule?.morning?.placeName, d.schedule?.afternoon?.placeName, d.schedule?.evening?.placeName].filter(Boolean)) : []);
+
+      // Format Day-wise Itinerary HTML
+      let itineraryHtml = '';
+      if (Array.isArray(trip.itinerary) && trip.itinerary.length > 0) {
+        itineraryHtml = `
+          <div style="margin-top: 1rem;">
+            <h4 style="color: var(--text-heading); font-size: 1.05rem; margin-bottom: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+              🗓️ Day-by-Day Itinerary (${trip.itinerary.length} Days)
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 0.9rem;">
+              ${trip.itinerary.map(day => `
+                <div style="background: var(--bg-body); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.4rem;">
+                    <strong style="color: var(--primary); font-size: 0.95rem;">${escapeHtml(day.title || `Day ${day.dayNumber} Tour`)}</strong>
+                    <span class="badge badge-info" style="font-size: 0.72rem;">Day ${day.dayNumber}</span>
+                  </div>
+
+                  ${day.suggestedVisitOrder ? `
+                    <div style="background: rgba(217, 119, 6, 0.08); border: 1px solid rgba(217, 119, 6, 0.2); border-radius: 4px; padding: 0.35rem 0.6rem; margin-bottom: 0.6rem; font-size: 0.78rem;">
+                      <strong style="color: var(--primary);">🚶 Suggested Order:</strong> ${escapeHtml(day.suggestedVisitOrder)}
+                    </div>
+                  ` : ''}
+
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.6rem; font-size: 0.82rem;">
+                    ${day.schedule?.morning ? `
+                      <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 4px; border-left: 3px solid #d97706;">
+                        <span style="color: #d97706; font-weight: 700; font-size: 0.72rem;">🌅 MORNING</span>
+                        <div style="font-weight: 700; margin: 0.1rem 0; color: var(--text-heading);">${escapeHtml(day.schedule.morning.placeName)}</div>
+                        <div style="color: var(--text-muted); font-size: 0.75rem;">${escapeHtml(day.schedule.morning.category || '')}</div>
+                      </div>
+                    ` : ''}
+
+                    ${day.schedule?.afternoon ? `
+                      <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 4px; border-left: 3px solid #059669;">
+                        <span style="color: #059669; font-weight: 700; font-size: 0.72rem;">☀️ AFTERNOON</span>
+                        <div style="font-weight: 700; margin: 0.1rem 0; color: var(--text-heading);">${escapeHtml(day.schedule.afternoon.placeName)}</div>
+                        <div style="color: var(--text-muted); font-size: 0.75rem;">${escapeHtml(day.schedule.afternoon.category || '')}</div>
+                      </div>
+                    ` : ''}
+
+                    ${day.schedule?.evening ? `
+                      <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 4px; border-left: 3px solid #7c3aed;">
+                        <span style="color: #7c3aed; font-weight: 700; font-size: 0.72rem;">🌆 EVENING</span>
+                        <div style="font-weight: 700; margin: 0.1rem 0; color: var(--text-heading);">${escapeHtml(day.schedule.evening.placeName)}</div>
+                        <div style="color: var(--text-muted); font-size: 0.75rem;">${escapeHtml(day.schedule.evening.category || '')}</div>
+                      </div>
+                    ` : ''}
+                  </div>
+
+                  ${day.schedule?.night ? `
+                    <div style="margin-top: 0.6rem; padding: 0.4rem 0.6rem; background: var(--primary-light); border-radius: 4px; font-size: 0.78rem;">
+                      <strong style="color: var(--primary);">🌙 Night Stay:</strong> ${escapeHtml(day.schedule.night.hotelName || day.schedule.night.dinner || 'Budget Hotel')}
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
       const modalContent = document.getElementById('trip-modal-content');
       modalContent.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.95rem;">
           
           <div style="padding: 1.2rem; background: var(--primary-light); border-radius: var(--radius-md); border: 1px solid var(--primary-border); display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">SAVED USER TRIP</span>
+              <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">SAVED USER TRIP • #${trip._id.slice(-6).toUpperCase()}</span>
               <h3 style="font-size: 1.4rem; color: var(--text-heading); margin: 0.1rem 0;">
                 📍 ${escapeHtml(trip.source)} to ${escapeHtml(trip.destination)}
               </h3>
             </div>
             <div style="text-align: right;">
               <span style="font-size: 1.25rem; font-weight: 800; color: #10b981;">${escapeHtml(trip.totalEstimatedCost)}</span>
-              <div style="font-size: 0.78rem; color: var(--text-muted);">Est. Budget</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">${trip.days} Days (${trip.travelers} Guests)</div>
             </div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
             <div>👤 <strong>User Name:</strong> ${escapeHtml(trip.userName)}</div>
             <div>✉️ <strong>User Email:</strong> ${escapeHtml(trip.userEmail)}</div>
-            <div>👥 <strong>Number of Travelers:</strong> ${trip.travelers} Persons</div>
+            <div>👥 <strong>Travelers:</strong> ${trip.travelers} Persons</div>
             <div>⏱️ <strong>Duration:</strong> ${trip.days} Days</div>
             <div>📅 <strong>Start Date:</strong> ${escapeHtml(trip.startDate || 'Not specified')}</div>
-            <div>🚍 <strong>Transport Mode:</strong> ${escapeHtml(trip.transportMode)}</div>
-            <div>🎭 <strong>Travel Category:</strong> ${escapeHtml(trip.travelType)}</div>
-            <div>🕒 <strong>Created On:</strong> ${createdDate}</div>
+            <div>🚍 <strong>Transport:</strong> ${escapeHtml(trip.transportMode)}</div>
+            <div>🎭 <strong>Trip Style:</strong> ${escapeHtml(trip.travelType)}</div>
+            <div>🕒 <strong>Created:</strong> ${createdDate}</div>
           </div>
+
+          ${placesList.length > 0 ? `
+            <div style="padding: 0.8rem 1rem; background: var(--bg-body); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+              <strong style="font-size: 0.85rem; color: var(--text-heading); display: block; marginBottom: 0.4rem;">
+                🛕 Distinct Tourist Attractions Included (${placesList.length}):
+              </strong>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem;">
+                ${[...new Set(placesList)].map(p => `
+                  <span style="background: rgba(217, 119, 6, 0.12); color: var(--primary); border: 1px solid var(--primary); border-radius: 12px; padding: 0.2rem 0.55rem; font-size: 0.75rem; font-weight: 600;">
+                    📍 ${escapeHtml(p)}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${itineraryHtml}
 
         </div>
       `;
